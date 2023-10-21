@@ -151,7 +151,23 @@
       <option name="project" value="LOCAL" />
       <updated>1697839552016</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="сделал аутентификацию (без разделения ролей)">
+      <option name="closed" value="true" />
+      <created>1697878208031</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1697878208031</updated>
+    </task>
+    <task id="LOCAL-00005" summary="немного оптимизировал код">
+      <option name="closed" value="true" />
+      <created>1697879003778</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1697879003778</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -159,7 +175,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="log_in" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -168,6 +196,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="добавил менюшки" />
     <MESSAGE value="добавил меню пользователя и админа" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавил меню пользователя и админа" />
+    <MESSAGE value="сделал аутентификацию (без разделения ролей)" />
+    <MESSAGE value="немного оптимизировал код" />
+    <option name="LAST_COMMIT_MESSAGE" value="немного оптимизировал код" />
   </component>
 </project>
