@@ -5,6 +5,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+//TODO: попробовать использовать эту либу
+import com.github.aneureka.TabularStringifier;
 
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
@@ -311,10 +313,52 @@ class ConsoleMenu {
         // Реализация поиска данных по атрибуту
     }
 
+    private static void printUsersTable(JSONArray userData) {
+        System.out.format("%-4s %-15s %-15s %-15s %-15s %-4s %-8s %-19s %-19s %-12s %-13s %-10s%n",
+                "ID", "Last Name", "First Name", "Login", "Password", "Role", "Status", "Last Login", "Last Exit", "Login Count", "Logout Count", "Work Time");
+
+        for (Object obj : userData) {
+            if (obj instanceof JSONObject) {
+                JSONObject user = (JSONObject) obj;
+                int id = ((Long) user.get("id")).intValue();
+                String lastName = (String) user.get("last_name");
+                String firstName = (String) user.get("first_name");
+                String login = (String) user.get("login");
+                String password = (String) user.get("password"); // Получаем пароль
+                int role = ((Long) user.get("role")).intValue();
+                String status = (String) user.get("status");
+                String lastLogin = (String) user.get("last_login");
+                String lastExit = (String) user.get("last_exit");
+                int loginCount = 0; // default value
+                int logoutCount = 0; // default value
+                double workTime = 0.0; // default value
+
+                if (user.containsKey("login_count")) {
+                    loginCount = ((Long) user.get("login_count")).intValue();
+                }
+
+                if (user.containsKey("logout_count")) {
+                    logoutCount = ((Long) user.get("logout_count")).intValue();
+                }
+
+                if (user.containsKey("work_time")) {
+                    workTime = (Double) user.get("work_time");
+                }
+
+                System.out.format("%-4d %-15s %-15s %-15s %-15s %-4d %-8s %-19s %-19s %-12d %-13d %-10.2f%n",
+                        id, lastName, firstName, login, password, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+            }
+        }
+    }
+
+
+
     public static void showAllUsers() {
         System.out.println("Показать всех пользователей...");
-        // Реализация показа всех пользователей
+        JSONArray userData = readJsonData();
+        printUsersTable(userData);
     }
+
 
     public static void createUser() {
         System.out.println("Создать нового пользователя...");

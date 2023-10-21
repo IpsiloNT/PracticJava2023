@@ -1,0 +1,199 @@
+Index: Lobanov.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\" inherit-compiler-output=\"true\">\r\n    <exclude-output />\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src\" isTestSource=\"false\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Lobanov.iml b/Lobanov.iml
+--- a/Lobanov.iml	(revision 16c3244e92323469775e65a22e2b7e38b9b79e67)
++++ b/Lobanov.iml	(date 1697885175113)
+@@ -7,5 +7,14 @@
+     </content>
+     <orderEntry type="inheritedJdk" />
+     <orderEntry type="sourceFolder" forTests="false" />
++    <orderEntry type="module-library" exported="">
++      <library>
++        <CLASSES>
++          <root url="jar://$MODULE_DIR$/jar/PrettyTable4J-0.0.2.jar!/" />
++        </CLASSES>
++        <JAVADOC />
++        <SOURCES />
++      </library>
++    </orderEntry>
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"182497a5-f139-42ac-b932-8f3f868e1427\" name=\"Changes\" comment=\"\">\r\n      <change afterPath=\"$PROJECT_DIR$/.gitignore\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/modules.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/vcs.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/Lobanov.iml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/Lobanov/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/Main.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"admin\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n    <option name=\"UPDATE_TYPE\" value=\"REBASE\" />\r\n  </component>\r\n  <component name=\"GitToolBoxStore\">\r\n    <option name=\"projectConfigVersion\" value=\"5\" />\r\n    <option name=\"recentBranches\">\r\n      <RecentBranches>\r\n        <option name=\"branchesForRepo\">\r\n          <list>\r\n            <RecentBranchesForRepo>\r\n              <option name=\"branches\">\r\n                <list>\r\n                  <RecentBranch>\r\n                    <option name=\"branchName\" value=\"master\" />\r\n                    <option name=\"lastUsedInstant\" value=\"1697839452\" />\r\n                  </RecentBranch>\r\n                  <RecentBranch>\r\n                    <option name=\"branchName\" value=\"admin\" />\r\n                    <option name=\"lastUsedInstant\" value=\"1697830023\" />\r\n                  </RecentBranch>\r\n                </list>\r\n              </option>\r\n              <option name=\"repositoryRootUrl\" value=\"file://$PROJECT_DIR$\" />\r\n            </RecentBranchesForRepo>\r\n          </list>\r\n        </option>\r\n      </RecentBranches>\r\n    </option>\r\n  </component>\r\n  <component name=\"GithubDefaultAccount\">\r\n    <option name=\"defaultAccountId\" value=\"8fcb668e-c5b8-4561-bc3d-dad18b064082\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2X1Kkju0ydR006Qwc65OLa8Wu2Q\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\r\n    \"create.test.in.the.same.root\": \"true\",\r\n    \"git-widget-placeholder\": \"master\",\r\n    \"ignore.virus.scanning.warn.message\": \"true\",\r\n    \"onboarding.tips.debug.path\": \"C:/Users/Honor/OneDrive/Рабочий стол/Учёба/3 курс/Практики/Производственные/Java/Lobanov/src/Main.java\",\r\n    \"settings.editor.selected.configurable\": \"preferences.pluginManager\"\r\n  },\r\n  \"keyToStringList\": {\r\n    \"GitStage.ChangesTree.GroupingKeys\": [\r\n      \"directory\",\r\n      \"module\",\r\n      \"repository\"\r\n    ]\r\n  }\r\n}]]></component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"182497a5-f139-42ac-b932-8f3f868e1427\" name=\"Changes\" comment=\"\" />\r\n      <created>1697791290750</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1697791290750</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"добавил менюшки\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1697829724289</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1697829724289</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"добавил менюшки\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1697829984063</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1697829984063</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"3\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"добавил менюшки\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"добавил менюшки\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 16c3244e92323469775e65a22e2b7e38b9b79e67)
++++ b/.idea/workspace.xml	(date 1697885175123)
+@@ -20,9 +20,15 @@
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
+   <component name="Git.Settings">
++    <option name="PUSH_TAGS">
++      <GitPushTagMode>
++        <option name="argument" value="--tags" />
++        <option name="title" value="All" />
++      </GitPushTagMode>
++    </option>
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="admin" />
++        <entry key="$PROJECT_DIR$" value="log_in" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -38,12 +44,20 @@
+               <option name="branches">
+                 <list>
+                   <RecentBranch>
+-                    <option name="branchName" value="master" />
+-                    <option name="lastUsedInstant" value="1697839452" />
++                    <option name="branchName" value="log_in" />
++                    <option name="lastUsedInstant" value="1697873485" />
+                   </RecentBranch>
+                   <RecentBranch>
+                     <option name="branchName" value="admin" />
+-                    <option name="lastUsedInstant" value="1697830023" />
++                    <option name="lastUsedInstant" value="1697873476" />
++                  </RecentBranch>
++                  <RecentBranch>
++                    <option name="branchName" value="master" />
++                    <option name="lastUsedInstant" value="1697839615" />
++                  </RecentBranch>
++                  <RecentBranch>
++                    <option name="branchName" value="user" />
++                    <option name="lastUsedInstant" value="1697839605" />
+                   </RecentBranch>
+                 </list>
+               </option>
+@@ -65,14 +79,22 @@
+   </component>
+   <component name="PropertiesComponent"><![CDATA[{
+   "keyToString": {
++    "Downloaded.Files.Path.Enabled": "true",
++    "Repository.Attach.Annotations": "false",
++    "Repository.Attach.JavaDocs": "false",
++    "Repository.Attach.Sources": "false",
+     "RunOnceActivity.OpenProjectViewOnStart": "true",
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+     "create.test.in.the.same.root": "true",
+-    "git-widget-placeholder": "master",
++    "git-widget-placeholder": "admin",
+     "ignore.virus.scanning.warn.message": "true",
++    "last_opened_file_path": "C:/Users/Honor/OneDrive/Рабочий стол/Учёба/3 курс/Практики/Производственные/Java/Lobanov/jar/PrettyTable4J-0.0.2.jar",
+     "onboarding.tips.debug.path": "C:/Users/Honor/OneDrive/Рабочий стол/Учёба/3 курс/Практики/Производственные/Java/Lobanov/src/Main.java",
+-    "settings.editor.selected.configurable": "preferences.pluginManager"
++    "project.structure.last.edited": "Modules",
++    "project.structure.proportion": "0.15",
++    "project.structure.side.proportion": "0.2",
++    "settings.editor.selected.configurable": "preferences.intentionPowerPack"
+   },
+   "keyToStringList": {
+     "GitStage.ChangesTree.GroupingKeys": [
+@@ -82,6 +104,21 @@
+     ]
+   }
+ }]]></component>
++  <component name="RunManager">
++    <configuration name="ConsoleMenu" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
++      <option name="MAIN_CLASS_NAME" value="ConsoleMenu" />
++      <module name="Lobanov" />
++      <method v="2">
++        <option name="Make" enabled="true" />
++      </method>
++    </configuration>
++    <recent_temporary>
++      <list>
++        <item itemvalue="Application.ConsoleMenu" />
++        <item itemvalue="Application.ConsoleMenu" />
++      </list>
++    </recent_temporary>
++  </component>
+   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+   <component name="TaskManager">
+     <task active="true" id="Default" summary="Default task">
+@@ -107,7 +144,39 @@
+       <option name="project" value="LOCAL" />
+       <updated>1697829984063</updated>
+     </task>
+-    <option name="localTasksCounter" value="3" />
++    <task id="LOCAL-00003" summary="добавил меню пользователя и админа">
++      <option name="closed" value="true" />
++      <created>1697839552016</created>
++      <option name="number" value="00003" />
++      <option name="presentableId" value="LOCAL-00003" />
++      <option name="project" value="LOCAL" />
++      <updated>1697839552016</updated>
++    </task>
++    <task id="LOCAL-00004" summary="сделал аутентификацию (без разделения ролей)">
++      <option name="closed" value="true" />
++      <created>1697878208031</created>
++      <option name="number" value="00004" />
++      <option name="presentableId" value="LOCAL-00004" />
++      <option name="project" value="LOCAL" />
++      <updated>1697878208031</updated>
++    </task>
++    <task id="LOCAL-00005" summary="немного оптимизировал код">
++      <option name="closed" value="true" />
++      <created>1697879003778</created>
++      <option name="number" value="00005" />
++      <option name="presentableId" value="LOCAL-00005" />
++      <option name="project" value="LOCAL" />
++      <updated>1697879003778</updated>
++    </task>
++    <task id="LOCAL-00006" summary="изменил json, добавил все необходимое">
++      <option name="closed" value="true" />
++      <created>1697879254483</created>
++      <option name="number" value="00006" />
++      <option name="presentableId" value="LOCAL-00006" />
++      <option name="project" value="LOCAL" />
++      <updated>1697879254483</updated>
++    </task>
++    <option name="localTasksCounter" value="7" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -115,7 +184,19 @@
+       <map>
+         <entry key="MAIN">
+           <value>
+-            <State />
++            <State>
++              <option name="FILTERS">
++                <map>
++                  <entry key="branch">
++                    <value>
++                      <list>
++                        <option value="log_in" />
++                      </list>
++                    </value>
++                  </entry>
++                </map>
++              </option>
++            </State>
+           </value>
+         </entry>
+       </map>
+@@ -123,6 +204,10 @@
+   </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="добавил менюшки" />
+-    <option name="LAST_COMMIT_MESSAGE" value="добавил менюшки" />
++    <MESSAGE value="добавил меню пользователя и админа" />
++    <MESSAGE value="сделал аутентификацию (без разделения ролей)" />
++    <MESSAGE value="немного оптимизировал код" />
++    <MESSAGE value="изменил json, добавил все необходимое" />
++    <option name="LAST_COMMIT_MESSAGE" value="изменил json, добавил все необходимое" />
+   </component>
+ </project>
+\ No newline at end of file
