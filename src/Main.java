@@ -10,6 +10,7 @@ class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
     private static JSONArray data;
 
+
     public static void main(String[] args) {
         data = readJsonData(); // Считываем данные из JSON-файла
 
@@ -43,7 +44,7 @@ class ConsoleMenu {
         }
     }
 
-    private static boolean authenticateUser(String login, String password) {
+    private static int authenticateUser(String login, String password) {
         if (data != null) {
             for (Object obj : data) {
                 JSONObject user = (JSONObject) obj;
@@ -51,11 +52,12 @@ class ConsoleMenu {
                 String userPassword = (String) user.get("password");
 
                 if (userLogin.equals(login) && userPassword.equals(password)) {
-                    return true;
+                    Long roleLong = (Long) user.get("role"); // Получаем роль как Long
+                    return roleLong.intValue(); // Преобразуем Long в int
                 }
             }
         }
-        return false;
+        return -1; // -1 означает, что пользователь с заданными учетными данными не найден.
     }
 
     private static void authenticate() {
@@ -65,15 +67,25 @@ class ConsoleMenu {
             System.out.print("Введите пароль: ");
             String password = scanner.nextLine();
 
-            if (authenticateUser(login, password)) {
+            int role = authenticateUser(login, password);
+
+            if (role != -1) {
                 System.out.println("Вход выполнен успешно.");
-                // Здесь вы можете вызвать соответствующее меню для пользователя или администратора.
-                // Например, вызов userMenu() или adminMenu() в зависимости от роли пользователя.
+
+                if (role == 1) {
+                    // Администратор
+                    adminMenu();
+                } else if (role == 0) {
+                    // Пользователь
+                    userMenu();
+                }
+
             } else {
                 System.out.println("Неверный логин или пароль. Попробуйте снова.");
             }
         }
     }
+
 
     private static int getChoice(int max) {
         int choice;

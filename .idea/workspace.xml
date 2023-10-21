@@ -167,7 +167,15 @@
       <option name="project" value="LOCAL" />
       <updated>1697879003778</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="изменил json, добавил все необходимое">
+      <option name="closed" value="true" />
+      <created>1697879254483</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1697879254483</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -198,6 +206,7 @@
     <MESSAGE value="добавил меню пользователя и админа" />
     <MESSAGE value="сделал аутентификацию (без разделения ролей)" />
     <MESSAGE value="немного оптимизировал код" />
-    <option name="LAST_COMMIT_MESSAGE" value="немного оптимизировал код" />
+    <MESSAGE value="изменил json, добавил все необходимое" />
+    <option name="LAST_COMMIT_MESSAGE" value="изменил json, добавил все необходимое" />
   </component>
 </project>
