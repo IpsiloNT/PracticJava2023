@@ -280,10 +280,10 @@ class ConsoleMenu {
 
             switch (choice) {
                 case 1:
-                    sortData();
+                    sortChooseAttribute();
                     break;
                 case 2:
-                    filterData();
+                    filterChooseAttribute();
                     break;
                 case 3:
                     findData();
@@ -296,15 +296,66 @@ class ConsoleMenu {
         }
     }
 
-    public static void sortData() {
-        System.out.println("Отсортировать данные...");
-        // Реализация отсортировки данных
+    public static void sortChooseAttribute() {
+        while (true) {
+            System.out.println("Выберите поле для сортировки");
+            System.out.println("1. По фамилии");
+            System.out.println("2. По имени");
+            System.out.println("3. По логину");
+            System.out.println("4. По паролю");
+            System.out.println("0. Выйти в предыдущее меню");
+
+            int fieldChoice = getChoice(4); // Получить выбор поля для сортировки (0, 1, 2, 3, 4)
+
+            if (fieldChoice == 0) {
+                return;
+            }
+
+            int directionChoice = getSortDirection(); // Получить выбор направления сортировки
+
+            sortData(fieldChoice, directionChoice);
+        }
     }
 
-    public static void filterData() {
-        System.out.println("Отфильтровать данные...");
-        // Реализация фильтрации данных
+    public static int getSortDirection() {
+        System.out.println("Выберите направление сортировки");
+        System.out.println("1. По возрастанию");
+        System.out.println("2. По убыванию");
+        return getChoice(2); // Получить выбор направления сортировки (1, 2)
     }
+
+    public static void sortData(int field, int direction) {
+        // Ваш код сортировки данных здесь
+        // В зависимости от значения "field" и "direction" сортируйте данные по нужному полю и направлению
+        // Например, вы можете использовать методы сортировки из библиотеки Java, такие как Arrays.sort() или Collections.sort()
+    }
+
+
+    public static void filterChooseAttribute() {
+        while (true) {
+            System.out.println("Выберите атрибут для фильтрации");
+            System.out.println("1. Администраторы");
+            System.out.println("2. Пользователи");
+            System.out.println("3. Отключенные");
+            System.out.println("4. Включенные");
+            System.out.println("0. Выйти в предыдущее меню");
+
+            int attributeChoice = getChoice(4); // Получить выбор атрибута для фильтрации (0, 1, 2, 3, 4)
+
+            if (attributeChoice == 0) {
+                return;
+            }
+
+            filterData(attributeChoice);
+        }
+    }
+
+    public static void filterData(int attribute) {
+        // Ваш код фильтрации данных здесь
+        // В зависимости от значения "attribute" фильтруйте данные по выбранному атрибуту
+        // Например, вы можете использовать потоки данных (Streams) в Java для фильтрации
+    }
+
 
     public static void findData() {
         System.out.println("Искать по атрибуту...");
