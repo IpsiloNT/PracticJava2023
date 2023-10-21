@@ -8,22 +8,20 @@ import org.json.simple.parser.JSONParser;
 
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
+    private static JSONArray data;
 
     public static void main(String[] args) {
+        data = readJsonData(); // Считываем данные из JSON-файла
+
         while (true) {
-            JSONArray data = readJsonData(); // Считываем данные из JSON-файла
             System.out.println("Выберите действие: ");
             System.out.println("1. Войти");
             System.out.println("0. Выйти");
+            int choice = getChoice(2);
 
-
-            int roleChoice = getChoice(2); // Получить выбор роли (0, 1 или 2)
-
-            switch (roleChoice) {
+            switch (choice) {
                 case 1:
-                    authenticate(data);
-                    break;
-                case 2:
+                    authenticate();
                     break;
                 case 0:
                     System.out.println("Выход из программы.");
@@ -38,8 +36,7 @@ class ConsoleMenu {
     private static JSONArray readJsonData() {
         try {
             JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(new FileReader("users.json"));
-            return jsonArray;
+            return (JSONArray) parser.parse(new FileReader("users.json"));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -47,9 +44,8 @@ class ConsoleMenu {
     }
 
     private static boolean authenticateUser(String login, String password) {
-        JSONArray jsonArray = readJsonData();
-        if (jsonArray != null) {
-            for (Object obj : jsonArray) {
+        if (data != null) {
+            for (Object obj : data) {
                 JSONObject user = (JSONObject) obj;
                 String userLogin = (String) user.get("login");
                 String userPassword = (String) user.get("password");
@@ -62,12 +58,12 @@ class ConsoleMenu {
         return false;
     }
 
-    private static void authenticate(JSONArray data) {
+    private static void authenticate() {
         while (true) {
             System.out.print("Введите логин: ");
-            String login = scanner.next();
+            String login = scanner.nextLine();
             System.out.print("Введите пароль: ");
-            String password = scanner.next();
+            String password = scanner.nextLine();
 
             if (authenticateUser(login, password)) {
                 System.out.println("Вход выполнен успешно.");
@@ -79,22 +75,21 @@ class ConsoleMenu {
         }
     }
 
-
-
-    private static int getChoice(int maxChoice) {
+    private static int getChoice(int max) {
+        int choice;
         while (true) {
             try {
-                int choice = scanner.nextInt();
-                if (choice >= 0 && choice <= maxChoice) {
-                    return choice;
+                choice = Integer.parseInt(scanner.nextLine());
+                if (choice >= 0 && choice <= max) {
+                    break;
                 } else {
                     System.out.println("Некорректный выбор. Попробуйте снова.");
                 }
-            } catch (java.util.InputMismatchException e) {
-                System.out.println("Ошибка ввода. Введите число.");
-                scanner.nextLine(); // Очистить буфер ввода
+            } catch (NumberFormatException e) {
+                System.out.println("Некорректный выбор. Попробуйте снова.");
             }
         }
+        return choice;
     }
 
     public static void userMenu() {
