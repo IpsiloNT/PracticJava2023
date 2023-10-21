@@ -63,9 +63,9 @@ class ConsoleMenu {
     private static void authenticate() {
         while (true) {
             System.out.print("Введите логин: ");
-            String login = scanner.nextLine();
+            String login = scanner.nextLine().replaceAll("\\s", ""); // Удаляем все пробелы
             System.out.print("Введите пароль: ");
-            String password = scanner.nextLine();
+            String password = scanner.nextLine().replaceAll("\\s", ""); // Удаляем все пробелы
 
             int role = authenticateUser(login, password);
 
@@ -85,7 +85,6 @@ class ConsoleMenu {
             }
         }
     }
-
 
     private static int getChoice(int max) {
         int choice;
