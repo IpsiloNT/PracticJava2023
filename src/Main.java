@@ -1,4 +1,10 @@
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+
+
 import java.util.Scanner;
 
 import org.json.simple.JSONArray;
@@ -43,6 +49,14 @@ class ConsoleMenu {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static void writeJsonData(JSONArray data) {
+        try (FileWriter file = new FileWriter("users.json")) {
+            file.write(data.toJSONString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -326,11 +340,83 @@ class ConsoleMenu {
         return getChoice(2); // Получить выбор направления сортировки (1, 2)
     }
 
-    public static void sortData(int field, int direction) {
-        // Ваш код сортировки данных здесь
-        // В зависимости от значения "field" и "direction" сортируйте данные по нужному полю и направлению
-        // Например, вы можете использовать методы сортировки из библиотеки Java, такие как Arrays.sort() или Collections.sort()
+    public static void sortData(int fieldChoice, int directionChoice) {
+        JSONArray userData = readJsonData();
+
+        if (userData == null) {
+            System.out.println("Ошибка чтения данных из JSON.");
+            return;
+        }
+
+        final String fieldToSort;
+        String fieldDescription = "";
+        switch (fieldChoice) {
+            case 1:
+                fieldToSort = "last_name";
+                fieldDescription = "Фамилия";
+                break;
+            case 2:
+                fieldToSort = "first_name";
+                fieldDescription = "Имя";
+                break;
+            case 3:
+                fieldToSort = "login";
+                fieldDescription = "Логин";
+                break;
+            case 4:
+                fieldToSort = "password";
+                fieldDescription = "Пароль";
+                break;
+            default:
+                fieldToSort = "last_name";
+        }
+
+        Collections.sort(userData, new Comparator<JSONObject>() {
+            @Override
+            public int compare(JSONObject user1, JSONObject user2) {
+                String value1 = (String) user1.get(fieldToSort);
+                String value2 = (String) user2.get(fieldToSort);
+
+                int result; // Compare result
+
+                if (directionChoice == 2) {
+                    result = value2.compareTo(value1); // Reverse order for descending
+                } else {
+                    result = value1.compareTo(value2);
+                }
+
+                return result;
+            }
+        });
+
+
+        // Вывод заголовков таблицы
+        System.out.printf("%-5s %-20s %-15s %-15s %-15s\n", "ID", fieldDescription, "Имя", "Логин", "Пароль");
+
+        // Вывод данных в виде таблицы
+        for (int i = userData.size() - 1; i >= 0; i--) {
+            JSONObject userObject = (JSONObject) userData.get(i);
+            System.out.printf("%-5s %-20s %-15s %-15s %-15s\n",
+                    userObject.get("id"),
+                    formatString(userObject.get("last_name").toString(), 20),
+                    formatString(userObject.get("first_name").toString(), 15),
+                    formatString(userObject.get("login").toString(), 15),
+                    formatString(userObject.get("password").toString(), 15));
+        }
+
+        System.out.println("Данные успешно отсортированы и выведены в виде таблицы в консоли.");
     }
+
+
+    public static String formatString(String value, int width) {
+        if (value.length() > width) {
+            return value.substring(0, width);
+        } else {
+            return String.format("%-" + width + "s", value);
+        }
+    }
+
+
 
 
     public static void filterChooseAttribute() {
@@ -401,7 +487,6 @@ class ConsoleMenu {
             }
         }
     }
-
 
 
     public static void showAllUsers() {
