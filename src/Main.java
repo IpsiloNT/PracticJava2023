@@ -1,23 +1,29 @@
+import java.io.FileReader;
 import java.util.Scanner;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         while (true) {
-            System.out.println("Выберите роль: ");
-            System.out.println("1. Войти как Пользователь");
-            System.out.println("2. Войти как Администратор");
+            JSONArray data = readJsonData(); // Считываем данные из JSON-файла
+            System.out.println("Выберите действие: ");
+            System.out.println("1. Войти");
             System.out.println("0. Выйти");
+
 
             int roleChoice = getChoice(2); // Получить выбор роли (0, 1 или 2)
 
             switch (roleChoice) {
                 case 1:
-                    userMenu();
+                    authenticate(data);
                     break;
                 case 2:
-                    adminMenu();
                     break;
                 case 0:
                     System.out.println("Выход из программы.");
@@ -28,6 +34,52 @@ class ConsoleMenu {
             }
         }
     }
+
+    private static JSONArray readJsonData() {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONArray jsonArray = (JSONArray) parser.parse(new FileReader("users.json"));
+            return jsonArray;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static boolean authenticateUser(String login, String password) {
+        JSONArray jsonArray = readJsonData();
+        if (jsonArray != null) {
+            for (Object obj : jsonArray) {
+                JSONObject user = (JSONObject) obj;
+                String userLogin = (String) user.get("login");
+                String userPassword = (String) user.get("password");
+
+                if (userLogin.equals(login) && userPassword.equals(password)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void authenticate(JSONArray data) {
+        while (true) {
+            System.out.print("Введите логин: ");
+            String login = scanner.next();
+            System.out.print("Введите пароль: ");
+            String password = scanner.next();
+
+            if (authenticateUser(login, password)) {
+                System.out.println("Вход выполнен успешно.");
+                // Здесь вы можете вызвать соответствующее меню для пользователя или администратора.
+                // Например, вызов userMenu() или adminMenu() в зависимости от роли пользователя.
+            } else {
+                System.out.println("Неверный логин или пароль. Попробуйте снова.");
+            }
+        }
+    }
+
+
 
     private static int getChoice(int maxChoice) {
         while (true) {

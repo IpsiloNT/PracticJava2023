@@ -20,6 +20,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="admin" />
@@ -38,12 +44,20 @@
               <option name="branches">
                 <list>
                   <RecentBranch>
-                    <option name="branchName" value="master" />
-                    <option name="lastUsedInstant" value="1697839452" />
+                    <option name="branchName" value="log_in" />
+                    <option name="lastUsedInstant" value="1697873485" />
                   </RecentBranch>
                   <RecentBranch>
                     <option name="branchName" value="admin" />
-                    <option name="lastUsedInstant" value="1697830023" />
+                    <option name="lastUsedInstant" value="1697873476" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1697839615" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="user" />
+                    <option name="lastUsedInstant" value="1697839605" />
                   </RecentBranch>
                 </list>
               </option>
@@ -65,14 +79,22 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Downloaded.Files.Path.Enabled": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "create.test.in.the.same.root": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "log__in",
     "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Honor/OneDrive/Рабочий стол/Учёба/3 курс/Практики/Производственные/Java/Lobanov/json-simple-1.1.1.jar",
     "onboarding.tips.debug.path": "C:/Users/Honor/OneDrive/Рабочий стол/Учёба/3 курс/Практики/Производственные/Java/Lobanov/src/Main.java",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack"
   },
   "keyToStringList": {
     "GitStage.ChangesTree.GroupingKeys": [
@@ -82,6 +104,20 @@
     ]
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="ConsoleMenu" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ConsoleMenu" />
+      <module name="Lobanov" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ConsoleMenu" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -107,7 +143,15 @@
       <option name="project" value="LOCAL" />
       <updated>1697829984063</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="добавил меню пользователя и админа">
+      <option name="closed" value="true" />
+      <created>1697839552016</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1697839552016</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -123,6 +167,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="добавил менюшки" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавил менюшки" />
+    <MESSAGE value="добавил меню пользователя и админа" />
+    <option name="LAST_COMMIT_MESSAGE" value="добавил меню пользователя и админа" />
   </component>
 </project>
