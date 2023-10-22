@@ -7,17 +7,22 @@ import java.util.Comparator;
 
 import java.util.Scanner;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import java.io.*;
 
-//TODO: попробовать использовать эту либу
-import com.github.aneureka.TabularStringifier;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_LongestWordMax;
+
 
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
-    private static JSONArray data;
-
+    private static JsonArray data;
 
     public static void main(String[] args) {
         data = readJsonData(); // Считываем данные из JSON-файла
@@ -42,13 +47,42 @@ class ConsoleMenu {
         }
     }
 
-    private static JSONArray readJsonData() {
-        try {
-            JSONParser parser = new JSONParser();
-            return (JSONArray) parser.parse(new FileReader("users.json"));
-        } catch (Exception e) {
+    private static int getChoice(int maxChoice) {
+        while (true) {
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                if (choice >= 0 && choice <= maxChoice) {
+                    return choice;
+                }
+            } catch (NumberFormatException e) {
+            }
+            System.out.println("Некорректный выбор. Попробуйте снова.");
+        }
+    }
+
+    // Метод для считывания данных в JSON-файл
+    private static JsonArray readJsonData() {
+        try (Reader reader = new FileReader("users.json")) {
+            JsonParser parser = new JsonParser();
+            JsonElement jsonElement = parser.parse(reader);
+            if (jsonElement.isJsonArray()) {
+                return jsonElement.getAsJsonArray();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            System.out.println("Ошибка при считывания данных.");
+        }
+        return new JsonArray();
+    }
+
+    // Метод для сохранения данных в JSON-файл
+    private static void saveJsonData(JsonArray data) {
+        try (Writer writer = new FileWriter("users.json")) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(data, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Ошибка при сохранении данных.");
         }
     }
 
@@ -62,14 +96,13 @@ class ConsoleMenu {
 
     private static int authenticateUser(String login, String password) {
         if (data != null) {
-            for (Object obj : data) {
-                JSONObject user = (JSONObject) obj;
-                String userLogin = (String) user.get("login");
-                String userPassword = (String) user.get("password");
+            for (int i = 0; i < data.size(); i++) {
+                JsonObject user = data.get(i).getAsJsonObject();
+                String userLogin = user.get("login").getAsString();
+                String userPassword = user.get("password").getAsString();
 
                 if (userLogin.equals(login) && userPassword.equals(password)) {
-                    Long roleLong = (Long) user.get("role"); // Получаем роль как Long
-                    return roleLong.intValue(); // Преобразуем Long в int
+                    return user.get("role").getAsInt();
                 }
             }
         }
@@ -79,9 +112,9 @@ class ConsoleMenu {
     private static void authenticate() {
         while (true) {
             System.out.print("Введите логин: ");
-            String login = scanner.nextLine();
+            String login = scanner.nextLine().replaceAll("\\s", ""); // Удаляем все пробелы
             System.out.print("Введите пароль: ");
-            String password = scanner.nextLine();
+            String password = scanner.nextLine().replaceAll("\\s", ""); // Удаляем все пробелы
 
             int role = authenticateUser(login, password);
 
@@ -95,29 +128,10 @@ class ConsoleMenu {
                     // Пользователь
                     userMenu();
                 }
-
             } else {
                 System.out.println("Неверный логин или пароль. Попробуйте снова.");
             }
         }
-    }
-
-
-    private static int getChoice(int max) {
-        int choice;
-        while (true) {
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-                if (choice >= 0 && choice <= max) {
-                    break;
-                } else {
-                    System.out.println("Некорректный выбор. Попробуйте снова.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Некорректный выбор. Попробуйте снова.");
-            }
-        }
-        return choice;
     }
 
     public static void userMenu() {
@@ -183,7 +197,7 @@ class ConsoleMenu {
 
     public static void dataManagement() {
         while (true) {
-            System.out.println("Работа с данными:");
+            System.out.println("Работа с данными");
             System.out.println("1. Поиск данных для формирования документа");
             System.out.println("2. Фильтрация данных для формирования документа");
             System.out.println("0. Выйти в предыдущее меню");
@@ -281,6 +295,44 @@ class ConsoleMenu {
                 default:
                     System.out.println("Некорректный выбор. Попробуйте снова.");
             }
+        }
+    }
+
+    public static void showAllUsers() {
+        System.out.println("Показать всех пользователей");
+        JsonArray userData = readJsonData();
+
+        if (userData.size() == 0) {
+            System.out.println("Нет доступных пользователей.");
+        } else {
+            AsciiTable table = new AsciiTable();
+            table.addRule();
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Роль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
+            table.addRule();
+
+            for (int i = 0; i < userData.size(); i++) {
+                JsonObject user = userData.get(i).getAsJsonObject();
+                String id = user.get("id").getAsString();
+                String lastName = user.get("last_name").getAsString();
+                String firstName = user.get("first_name").getAsString();
+                String login = user.get("login").getAsString();
+                String role = user.get("role").getAsString();
+                String status = user.get("status").getAsString();
+                String lastLogin = user.has("last_login") ? user.get("last_login").getAsString() : "";
+                String lastExit = user.has("last_exit") ? user.get("last_exit").getAsString() : "";
+                String loginCount = user.has("login_count") ? user.get("login_count").getAsString() : "";
+                String logoutCount = user.has("logout_count") ? user.get("logout_count").getAsString() : "";
+                String workTime = user.has("work_time") ? user.get("work_time").getAsString() : "";
+
+                table.addRow(id, lastName, firstName, login, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+                table.addRule();
+            }
+
+            // Настройка ширины колонок
+            table.getRenderer().setCWC(new CWC_LongestWordMax(50)); // 50 - максимальная ширина столбца
+
+            // Вывод таблицы
+            System.out.println(table.render());
         }
     }
 
@@ -450,42 +502,14 @@ class ConsoleMenu {
         // Реализация поиска данных по атрибуту
     }
 
-    private static void printUsersTable(JSONArray userData) {
-        System.out.format("%-4s %-15s %-15s %-15s %-15s %-4s %-8s %-19s %-19s %-12s %-13s %-10s%n",
-                "ID", "Last Name", "First Name", "Login", "Password", "Role", "Status", "Last Login", "Last Exit", "Login Count", "Logout Count", "Work Time");
-
-        for (Object obj : userData) {
-            if (obj instanceof JSONObject) {
-                JSONObject user = (JSONObject) obj;
-                int id = ((Long) user.get("id")).intValue();
-                String lastName = (String) user.get("last_name");
-                String firstName = (String) user.get("first_name");
-                String login = (String) user.get("login");
-                String password = (String) user.get("password"); // Получаем пароль
-                int role = ((Long) user.get("role")).intValue();
-                String status = (String) user.get("status");
-                String lastLogin = (String) user.get("last_login");
-                String lastExit = (String) user.get("last_exit");
-                int loginCount = 0; // default value
-                int logoutCount = 0; // default value
-                double workTime = 0.0; // default value
-
-                if (user.containsKey("login_count")) {
-                    loginCount = ((Long) user.get("login_count")).intValue();
-                }
-
-                if (user.containsKey("logout_count")) {
-                    logoutCount = ((Long) user.get("logout_count")).intValue();
-                }
-
-                if (user.containsKey("work_time")) {
-                    workTime = (Double) user.get("work_time");
-                }
-
-                System.out.format("%-4d %-15s %-15s %-15s %-15s %-4d %-8s %-19s %-19s %-12d %-13d %-10.2f%n",
-                        id, lastName, firstName, login, password, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+    private static boolean checkUserExistence(String login, JsonArray users) {
+        for (JsonElement user : users) {
+            JsonObject userObject = user.getAsJsonObject();
+            if (userObject.has("login") && userObject.get("login").getAsString().equals(login)) {
+                return true;
             }
         }
+        return false;
     }
 
 
@@ -497,8 +521,87 @@ class ConsoleMenu {
 
 
     public static void createUser() {
-        System.out.println("Создать нового пользователя...");
-        // Реализация создания нового пользователя
+        System.out.println("Создание нового пользователя");
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите фамилию: ");
+        String lastName = scanner.next();
+
+        System.out.print("Введите имя: ");
+        String firstName = scanner.next();
+
+        String login;
+        while (true) {
+            try {
+                System.out.print("Введите логин: ");
+                login = scanner.next();
+                if (login.isEmpty()) {
+                    throw new IllegalArgumentException("Логин не может быть пустым. Пожалуйста, введите логин.");
+                } else if (checkUserExistence(login, readJsonData())) {
+                    throw new IllegalArgumentException("Пользователь с таким логином уже существует. Пожалуйста, выберите другой логин.");
+                } else {
+                    break;
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        String password;
+        while (true) {
+            try {
+                System.out.print("Введите пароль: ");
+                password = scanner.next();
+                if (password.length() < 6) {
+                    throw new IllegalArgumentException("Пароль должен содержать как минимум 6 символов. Пожалуйста, введите пароль заново.");
+                } else {
+                    break;
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        int role;
+        while (true) {
+            try {
+                System.out.print("Введите роль (0 для пользователя, 1 для администратора): ");
+                String roleStr = scanner.next();
+                if (roleStr.isEmpty()) {
+                    throw new IllegalArgumentException("Роль не может быть пустой. Пожалуйста, введите роль.");
+                } else if (roleStr.equals("0") || roleStr.equals("1")) {
+                    role = Integer.parseInt(roleStr);
+                    break;
+                } else {
+                    throw new IllegalArgumentException("Роль должна быть 0 или 1.");
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        try {
+            JsonArray users = readJsonData();
+            JsonObject newUser = new JsonObject();
+
+            int userId = users.size() + 1;
+            newUser.addProperty("id", userId);
+            newUser.addProperty("last_name", lastName);
+            newUser.addProperty("first_name", firstName);
+            newUser.addProperty("login", login);
+            newUser.addProperty("password", password);
+            newUser.addProperty("role", role);
+            newUser.addProperty("status", "active");
+
+            users.add(newUser);
+
+            saveJsonData(users);
+
+            System.out.println("Пользователь успешно создан и добавлен в файл.");
+        } catch (Exception e) {
+            System.out.println("Произошла ошибка при сохранении пользователя: " + e.getMessage());
+        }
     }
 
     public static void updateUser() {

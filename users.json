@@ -25,5 +25,14 @@
     "last_exit": "2023-10-19 15:46:15",
     "login_count": 3,
     "work_time": 0.07
+  },
+  {
+    "id": 3,
+    "last_name": "awg",
+    "first_name": "awf",
+    "login": "awfawf",
+    "password": "awfawf",
+    "role": 0,
+    "status": "active"
   }
 ]
