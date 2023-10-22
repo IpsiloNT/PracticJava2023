@@ -1,9 +1,17 @@
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.util.Scanner;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+
+
+
 
 
 class ConsoleMenu {
@@ -41,6 +49,23 @@ class ConsoleMenu {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+
+
+    // Метод для отображения всех пользователей
+    private static void showAllUsers(JSONArray data) {
+        System.out.println("Список пользователей:");
+        for (Object obj : data) {
+            JSONObject user = (JSONObject) obj;
+            System.out.println("ID: " + user.get("id"));
+            System.out.println("Фамилия: " + user.get("last_name"));
+            System.out.println("Имя: " + user.get("first_name"));
+            System.out.println("Логин: " + user.get("login"));
+            System.out.println("Роль: " + user.get("role"));
+            System.out.println("Статус: " + user.get("status"));
+            System.out.println();
         }
     }
 
@@ -311,14 +336,114 @@ class ConsoleMenu {
         // Реализация поиска данных по атрибуту
     }
 
+    private static boolean checkUserExistence(String login, JSONArray data) {
+        for (Object obj : data) {
+            JSONObject user = (JSONObject) obj;
+            String existingLogin = (String) user.get("login");
+            if (existingLogin.equals(login)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void showAllUsers() {
         System.out.println("Показать всех пользователей...");
         // Реализация показа всех пользователей
     }
 
+
+    // Метод для сохранения данных в JSON-файл
+    private static void saveJsonData(JSONArray data) {
+        try (FileWriter file = new FileWriter("users.json")) {
+            file.write(data.toJSONString());
+            file.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Ошибка при сохранении данных.");
+        }
+    }
+
     public static void createUser() {
         System.out.println("Создать нового пользователя...");
-        // Реализация создания нового пользователя
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите фамилию: ");
+        String lastName = scanner.next();
+
+        System.out.print("Введите имя: ");
+        String firstName = scanner.next();
+
+        String login;
+        while (true) {
+            System.out.print("Введите логин: ");
+            login = scanner.next();
+            if (login.isEmpty()) {
+                System.out.println("Логин не может быть пустым. Пожалуйста, введите логин.");
+            } else if (checkUserExistence(login, readJsonData())) {
+                System.out.println("Пользователь с таким логином уже существует. Пожалуйста, выберите другой логин.");
+            } else {
+                break;
+            }
+        }
+
+        String password;
+        while (true) {
+            System.out.print("Введите пароль: ");
+            password = scanner.next();
+            if (password.length() < 6) {
+                System.out.println("Пароль должен содержать как минимум 6 символов. Пожалуйста, введите пароль заново.");
+            } else {
+                break;
+            }
+        }
+
+        int role;
+        while (true) {
+            System.out.print("Введите роль (0 для пользователя, 1 для администратора): ");
+            String roleStr = scanner.next();
+            if (roleStr.equals("0") || roleStr.equals("1")) {
+                role = Integer.parseInt(roleStr);
+                break;
+            } else {
+                System.out.println("Роль должна быть 0 или 1.");
+            }
+        }
+
+        JSONArray users = readJsonData();
+        JSONObject newUser = new JSONObject();
+
+        int userId = users.size() + 1;
+        newUser.put("id", userId);
+        newUser.put("last_name", lastName);
+        newUser.put("first_name", firstName);
+        newUser.put("login", login);
+        newUser.put("password", password);
+        newUser.put("role", role);
+        newUser.put("status", "active");
+
+        users.add(newUser);
+
+        // Сохраняем обновленный JSON-массив в файл с отформатированием
+        try (FileWriter file = new FileWriter("users.json")) {
+            file.write(prettyPrintJson(users.toJSONString()));
+            System.out.println("Пользователь успешно создан и добавлен в файл.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Ошибка при сохранении пользователя.");
+        }
+    }
+
+    private static String prettyPrintJson(String jsonString) {
+        try {
+            JSONParser parser = new JSONParser();
+            Object json = parser.parse(jsonString);
+            return ((JSONObject) json).toJSONString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return jsonString;
+        }
     }
 
     public static void updateUser() {
