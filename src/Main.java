@@ -1,15 +1,14 @@
 import java.io.FileReader;
 import java.util.Scanner;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
 
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
-    private static JSONArray data;
-
+    private static JsonArray data;
 
     public static void main(String[] args) {
         data = readJsonData(); // Считываем данные из JSON-файла
@@ -34,10 +33,18 @@ class ConsoleMenu {
         }
     }
 
-    private static JSONArray readJsonData() {
+    private static JsonArray readJsonData() {
         try {
-            JSONParser parser = new JSONParser();
-            return (JSONArray) parser.parse(new FileReader("users.json"));
+            JsonParser jsonParser = new JsonParser();
+            FileReader fileReader = new FileReader("users.json");
+            JsonElement jsonElement = jsonParser.parse(fileReader);
+
+            if (jsonElement.isJsonArray()) {
+                return jsonElement.getAsJsonArray();
+            } else {
+                // Handle the case where the JSON is not an array
+                throw new IllegalStateException("Данные JSON не являются массивами.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -46,14 +53,13 @@ class ConsoleMenu {
 
     private static int authenticateUser(String login, String password) {
         if (data != null) {
-            for (Object obj : data) {
-                JSONObject user = (JSONObject) obj;
-                String userLogin = (String) user.get("login");
-                String userPassword = (String) user.get("password");
+            for (int i = 0; i < data.size(); i++) {
+                JsonObject user = data.get(i).getAsJsonObject();
+                String userLogin = user.get("login").getAsString();
+                String userPassword = user.get("password").getAsString();
 
                 if (userLogin.equals(login) && userPassword.equals(password)) {
-                    Long roleLong = (Long) user.get("role"); // Получаем роль как Long
-                    return roleLong.intValue(); // Преобразуем Long в int
+                    return user.get("role").getAsInt();
                 }
             }
         }
@@ -79,28 +85,23 @@ class ConsoleMenu {
                     // Пользователь
                     userMenu();
                 }
-
             } else {
                 System.out.println("Неверный логин или пароль. Попробуйте снова.");
             }
         }
     }
 
-    private static int getChoice(int max) {
-        int choice;
+    private static int getChoice(int maxChoice) {
         while (true) {
             try {
-                choice = Integer.parseInt(scanner.nextLine());
-                if (choice >= 0 && choice <= max) {
-                    break;
-                } else {
-                    System.out.println("Некорректный выбор. Попробуйте снова.");
+                int choice = Integer.parseInt(scanner.nextLine());
+                if (choice >= 0 && choice <= maxChoice) {
+                    return choice;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Некорректный выбор. Попробуйте снова.");
             }
+            System.out.println("Некорректный выбор. Попробуйте снова.");
         }
-        return choice;
     }
 
     public static void userMenu() {
