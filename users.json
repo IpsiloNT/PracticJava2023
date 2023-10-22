@@ -15,50 +15,19 @@
   },
   {
     "id": 2,
-    "last_name": "user",
-    "first_name": "user",
-    "login": "d",
-    "password": "d",
-    "role": 0,
-    "status": "active",
-    "last_login": "2023-10-19 15:46:11",
-    "last_exit": "2023-10-19 15:46:15",
-    "login_count": 3,
-    "work_time": 0.07
-  },
-  {
-    "id": 3,
-    "last_name": "awdawdawdd",
-    "first_name": "awdawdawdd",
-    "login": "awdawdawdd",
-    "password": "awdawdawdd",
-    "role": 0,
-    "status": "active"
-  },
-  {
-    "id": 4,
     "last_name": "d",
     "first_name": "d",
-    "login": "ddd",
+    "login": "d",
     "password": "dddddd",
     "role": 0,
     "status": "active"
   },
   {
-    "id": 5,
-    "last_name": "awd",
-    "first_name": "awd",
-    "login": "awd",
-    "password": "awdawd",
-    "role": 0,
-    "status": "active"
-  },
-  {
-    "id": 6,
-    "last_name": "ddddddddddddddddddd",
-    "first_name": "dddddddddddd",
-    "login": "dddddddddddd",
-    "password": "dddddddddddddddddd",
+    "id": 3,
+    "last_name": "d",
+    "first_name": "d",
+    "login": "ddd",
+    "password": "dddddd",
     "role": 0,
     "status": "active"
   }
