@@ -18,10 +18,6 @@ import com.google.gson.GsonBuilder;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMax;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonElement;
 
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
@@ -72,19 +68,6 @@ class ConsoleMenu {
                 return jsonElement.getAsJsonArray();
             }
         } catch (IOException e) {
-    private static JsonArray readJsonData() {
-        try {
-            JsonParser jsonParser = new JsonParser();
-            FileReader fileReader = new FileReader("users.json");
-            JsonElement jsonElement = jsonParser.parse(fileReader);
-
-            if (jsonElement.isJsonArray()) {
-                return jsonElement.getAsJsonArray();
-            } else {
-                // Handle the case where the JSON is not an array
-                throw new IllegalStateException("Данные JSON не являются массивами.");
-            }
-        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Ошибка при считывания данных.");
         }
@@ -139,19 +122,6 @@ class ConsoleMenu {
             } else {
                 System.out.println("Неверный логин или пароль. Попробуйте снова.");
             }
-        }
-    }
-
-    private static int getChoice(int maxChoice) {
-        while (true) {
-            try {
-                int choice = Integer.parseInt(scanner.nextLine());
-                if (choice >= 0 && choice <= maxChoice) {
-                    return choice;
-                }
-            } catch (NumberFormatException e) {
-            }
-            System.out.println("Некорректный выбор. Попробуйте снова.");
         }
     }
 
@@ -218,7 +188,7 @@ class ConsoleMenu {
 
     public static void dataManagement() {
         while (true) {
-            System.out.println("Работа с данными:");
+            System.out.println("Работа с данными");
             System.out.println("1. Поиск данных для формирования документа");
             System.out.println("2. Фильтрация данных для формирования документа");
             System.out.println("0. Выйти в предыдущее меню");
@@ -319,6 +289,44 @@ class ConsoleMenu {
         }
     }
 
+    public static void showAllUsers() {
+        System.out.println("Показать всех пользователей");
+        JsonArray userData = readJsonData();
+
+        if (userData.size() == 0) {
+            System.out.println("Нет доступных пользователей.");
+        } else {
+            AsciiTable table = new AsciiTable();
+            table.addRule();
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Роль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
+            table.addRule();
+
+            for (int i = 0; i < userData.size(); i++) {
+                JsonObject user = userData.get(i).getAsJsonObject();
+                String id = user.get("id").getAsString();
+                String lastName = user.get("last_name").getAsString();
+                String firstName = user.get("first_name").getAsString();
+                String login = user.get("login").getAsString();
+                String role = user.get("role").getAsString();
+                String status = user.get("status").getAsString();
+                String lastLogin = user.has("last_login") ? user.get("last_login").getAsString() : "";
+                String lastExit = user.has("last_exit") ? user.get("last_exit").getAsString() : "";
+                String loginCount = user.has("login_count") ? user.get("login_count").getAsString() : "";
+                String logoutCount = user.has("logout_count") ? user.get("logout_count").getAsString() : "";
+                String workTime = user.has("work_time") ? user.get("work_time").getAsString() : "";
+
+                table.addRow(id, lastName, firstName, login, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+                table.addRule();
+            }
+
+            // Настройка ширины колонок
+            table.getRenderer().setCWC(new CWC_LongestWordMax(50)); // 50 - максимальная ширина столбца
+
+            // Вывод таблицы
+            System.out.println(table.render());
+        }
+    }
+
     public static void sortFilterOrFind() {
         while (true) {
             System.out.println("Выберите действие над данными");
@@ -375,12 +383,73 @@ class ConsoleMenu {
         return getChoice(2); // Получить выбор направления сортировки (1, 2)
     }
 
-    public static void sortData(int field, int direction) {
-        // Ваш код сортировки данных здесь
-        // В зависимости от значения "field" и "direction" сортируйте данные по нужному полю и направлению
-        // Например, вы можете использовать методы сортировки из библиотеки Java, такие как Arrays.sort() или Collections.sort()
+    public static void bubbleSort(JsonArray data, String attribute, boolean ascending) {
+        int n = data.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                JsonObject current = data.get(j).getAsJsonObject();
+                JsonObject next = data.get(j + 1).getAsJsonObject();
+                String currentValue = current.get(attribute).getAsString();
+                String nextValue = next.get(attribute).getAsString();
+                int comparisonResult = currentValue.compareTo(nextValue);
+                if ((ascending && comparisonResult > 0) || (!ascending && comparisonResult < 0)) {
+                    // Swap data[j] and data[j+1]
+                    JsonElement temp = data.get(j);
+                    data.set(j, data.get(j + 1));
+                    data.set(j + 1, temp);
+                }
+            }
+        }
     }
 
+    public static void sortData(int fieldChoice, int directionChoice) {
+        String attribute;
+        boolean ascending = true;
+
+        switch (fieldChoice) {
+            case 1:
+                attribute = "last_name";
+                break;
+            case 2:
+                attribute = "first_name";
+                break;
+            case 3:
+                attribute = "login";
+                break;
+            case 4:
+                attribute = "password";
+                break;
+            default:
+                return;
+        }
+
+        if (directionChoice == 2) {
+            ascending = false;
+        }
+
+        JsonArray data = readJsonData();
+        displaySortedData(data, attribute, ascending);
+    }
+
+    public static void displaySortedData(JsonArray data, String attribute, boolean ascending) {
+        bubbleSort(data, attribute, ascending);
+
+        AsciiTable table = new AsciiTable();
+        table.addRule();
+        table.addRow("last_name", "first_name", "login", "password"); // Заголовки столбцов
+
+        for (JsonElement element : data) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            table.addRule();
+            table.addRow(jsonObject.get("last_name").getAsString(),
+                    jsonObject.get("first_name").getAsString(),
+                    jsonObject.get("login").getAsString(),
+                    jsonObject.get("password").getAsString());
+        }
+        table.addRule();
+
+        System.out.println(table.render());
+    }
 
     public static void filterChooseAttribute() {
         while (true) {
@@ -396,31 +465,107 @@ class ConsoleMenu {
             if (attributeChoice == 0) {
                 return;
             }
-
-            filterData(attributeChoice);
         }
     }
-
-    public static void filterData(int attribute) {
-        // Ваш код фильтрации данных здесь
-        // В зависимости от значения "attribute" фильтруйте данные по выбранному атрибуту
-        // Например, вы можете использовать потоки данных (Streams) в Java для фильтрации
-    }
-
 
     public static void findData() {
         System.out.println("Искать по атрибуту...");
         // Реализация поиска данных по атрибуту
     }
 
-    public static void showAllUsers() {
-        System.out.println("Показать всех пользователей...");
-        // Реализация показа всех пользователей
+    private static boolean checkUserExistence(String login, JsonArray users) {
+        for (JsonElement user : users) {
+            JsonObject userObject = user.getAsJsonObject();
+            if (userObject.has("login") && userObject.get("login").getAsString().equals(login)) {
+                return true;
+            }
+        }
+        return false;
     }
 
+
     public static void createUser() {
-        System.out.println("Создать нового пользователя...");
-        // Реализация создания нового пользователя
+        System.out.println("Создание нового пользователя");
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Введите фамилию: ");
+        String lastName = scanner.next();
+
+        System.out.print("Введите имя: ");
+        String firstName = scanner.next();
+
+        String login;
+        while (true) {
+            try {
+                System.out.print("Введите логин: ");
+                login = scanner.next();
+                if (login.isEmpty()) {
+                    throw new IllegalArgumentException("Логин не может быть пустым. Пожалуйста, введите логин.");
+                } else if (checkUserExistence(login, readJsonData())) {
+                    throw new IllegalArgumentException("Пользователь с таким логином уже существует. Пожалуйста, выберите другой логин.");
+                } else {
+                    break;
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        String password;
+        while (true) {
+            try {
+                System.out.print("Введите пароль: ");
+                password = scanner.next();
+                if (password.length() < 6) {
+                    throw new IllegalArgumentException("Пароль должен содержать как минимум 6 символов. Пожалуйста, введите пароль заново.");
+                } else {
+                    break;
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        int role;
+        while (true) {
+            try {
+                System.out.print("Введите роль (0 для пользователя, 1 для администратора): ");
+                String roleStr = scanner.next();
+                if (roleStr.isEmpty()) {
+                    throw new IllegalArgumentException("Роль не может быть пустой. Пожалуйста, введите роль.");
+                } else if (roleStr.equals("0") || roleStr.equals("1")) {
+                    role = Integer.parseInt(roleStr);
+                    break;
+                } else {
+                    throw new IllegalArgumentException("Роль должна быть 0 или 1.");
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        try {
+            JsonArray users = readJsonData();
+            JsonObject newUser = new JsonObject();
+
+            int userId = users.size() + 1;
+            newUser.addProperty("id", userId);
+            newUser.addProperty("last_name", lastName);
+            newUser.addProperty("first_name", firstName);
+            newUser.addProperty("login", login);
+            newUser.addProperty("password", password);
+            newUser.addProperty("role", role);
+            newUser.addProperty("status", "active");
+
+            users.add(newUser);
+
+            saveJsonData(users);
+
+            System.out.println("Пользователь успешно создан и добавлен в файл.");
+        } catch (Exception e) {
+            System.out.println("Произошла ошибка при сохранении пользователя: " + e.getMessage());
+        }
     }
 
     public static void updateUser() {
