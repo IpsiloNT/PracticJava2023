@@ -1,6 +1,23 @@
 import java.io.FileReader;
 import java.util.Scanner;
 
+import java.io.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_LongestWordMax;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -33,6 +50,28 @@ class ConsoleMenu {
         }
     }
 
+    private static int getChoice(int maxChoice) {
+        while (true) {
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                if (choice >= 0 && choice <= maxChoice) {
+                    return choice;
+                }
+            } catch (NumberFormatException e) {
+            }
+            System.out.println("Некорректный выбор. Попробуйте снова.");
+        }
+    }
+
+    // Метод для считывания данных в JSON-файл
+    private static JsonArray readJsonData() {
+        try (Reader reader = new FileReader("users.json")) {
+            JsonParser parser = new JsonParser();
+            JsonElement jsonElement = parser.parse(reader);
+            if (jsonElement.isJsonArray()) {
+                return jsonElement.getAsJsonArray();
+            }
+        } catch (IOException e) {
     private static JsonArray readJsonData() {
         try {
             JsonParser jsonParser = new JsonParser();
@@ -47,7 +86,19 @@ class ConsoleMenu {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            System.out.println("Ошибка при считывания данных.");
+        }
+        return new JsonArray();
+    }
+
+    // Метод для сохранения данных в JSON-файл
+    private static void saveJsonData(JsonArray data) {
+        try (Writer writer = new FileWriter("users.json")) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(data, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Ошибка при сохранении данных.");
         }
     }
 

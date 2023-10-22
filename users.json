@@ -25,5 +25,23 @@
     "last_exit": "2023-10-19 15:46:15",
     "login_count": 3,
     "work_time": 0.07
+  },
+  {
+    "id": 3,
+    "last_name": "awdawdawdd",
+    "first_name": "awdawdawdd",
+    "login": "awdawdawdd",
+    "password": "awdawdawdd",
+    "role": 0,
+    "status": "active"
+  },
+  {
+    "id": 4,
+    "last_name": "d",
+    "first_name": "d",
+    "login": "ddd",
+    "password": "dddddd",
+    "role": 0,
+    "status": "active"
   }
 ]
