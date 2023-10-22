@@ -263,7 +263,7 @@ class ConsoleMenu {
                     updateUser();
                     break;
                 case 4:
-                    changeUserStatus();
+                    updateUserStatus();
                     break;
                 case 5:
                     deleteUser();
@@ -458,7 +458,6 @@ class ConsoleMenu {
         }
     }
 
-
     public static void filterData(int attributeChoice) {
         // Чтение данных из JSON-файла
         JsonArray jsonData = readJsonData();
@@ -626,9 +625,43 @@ class ConsoleMenu {
         // Реализация изменения данных пользователя
     }
 
-    public static void changeUserStatus() {
+    public static void updateUserStatus() {
         System.out.println("Изменить статус пользователя...");
-        // Реализация изменения статуса пользователя
+
+        JsonArray data = readJsonData();
+        showAllUsers();
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.print("Введите логин пользователя, статус которого вы хотите изменить (или нажмите Enter для отмены): ");
+            String loginToChangeStatus = scanner.nextLine();
+
+            if (loginToChangeStatus.isEmpty()) {
+                break; // Пользователь нажал Enter, выходим из цикла
+            }
+
+            JsonObject userToChangeStatus = null;
+
+            for (JsonElement element : data) {
+                JsonObject user = element.getAsJsonObject();
+                if (user.has("login") && user.get("login").getAsString().equals(loginToChangeStatus)) {
+                    userToChangeStatus = user;
+                    break;
+                }
+            }
+
+            if (userToChangeStatus != null) {
+                String currentStatus = userToChangeStatus.get("status").getAsString();
+                String newStatus = currentStatus.equals("active") ? "inactive" : "active";
+                userToChangeStatus.addProperty("status", newStatus);
+
+                saveJsonData(data);
+                System.out.println("Статус пользователя с логином '" + loginToChangeStatus + "' изменен на '" + newStatus + "'.");
+            } else {
+                System.out.println("Пользователь с логином '" + loginToChangeStatus + "' не найден.");
+            }
+        }
     }
 
     public static void deleteUser() {
