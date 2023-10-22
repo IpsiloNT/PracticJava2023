@@ -1,13 +1,12 @@
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-
-
 import java.util.Scanner;
 
 import java.io.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -83,14 +82,6 @@ class ConsoleMenu {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Ошибка при сохранении данных.");
-        }
-    }
-
-    public static void writeJsonData(JSONArray data) {
-        try (FileWriter file = new FileWriter("users.json")) {
-            file.write(data.toJSONString());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -392,84 +383,100 @@ class ConsoleMenu {
         return getChoice(2); // Получить выбор направления сортировки (1, 2)
     }
 
-    public static void sortData(int fieldChoice, int directionChoice) {
-        JSONArray userData = readJsonData();
 
-        if (userData == null) {
-            System.out.println("Ошибка чтения данных из JSON.");
+    public static void quickSort(JsonArray data, String attribute, boolean ascending) {
+        if (data == null || data.size() <= 1) {
             return;
         }
+        quickSortRecursive(data, attribute, ascending, 0, data.size() - 1);
+    }
 
-        final String fieldToSort;
-        String fieldDescription = "";
+    private static void quickSortRecursive(JsonArray data, String attribute, boolean ascending, int left, int right) {
+        if (left < right) {
+            int partitionIndex = partition(data, attribute, ascending, left, right);
+            quickSortRecursive(data, attribute, ascending, left, partitionIndex - 1);
+            quickSortRecursive(data, attribute, ascending, partitionIndex + 1, right);
+        }
+    }
+
+    private static int partition(JsonArray data, String attribute, boolean ascending, int left, int right) {
+        JsonObject pivot = data.get(right).getAsJsonObject();
+        String pivotValue = pivot.get(attribute).getAsString();
+        int i = (left - 1);
+
+        for (int j = left; j < right; j++) {
+            JsonObject current = data.get(j).getAsJsonObject();
+            String currentValue = current.get(attribute).getAsString();
+            int comparisonResult = currentValue.compareTo(pivotValue);
+
+            if ((ascending && comparisonResult < 0) || (!ascending && comparisonResult > 0)) {
+                i++;
+                // Swap data[i] and data[j]
+                JsonElement temp = data.get(i);
+                data.set(i, data.get(j));
+                data.set(j, temp);
+            }
+        }
+
+        // Swap data[i+1] and data[right] (pivot)
+        JsonElement temp = data.get(i + 1);
+        data.set(i + 1, data.get(right));
+        data.set(right, temp);
+
+        return i + 1;
+    }
+
+
+
+    public static void sortData(int fieldChoice, int directionChoice) {
+        String attribute;
+        boolean ascending = true;
+
         switch (fieldChoice) {
             case 1:
-                fieldToSort = "last_name";
-                fieldDescription = "Фамилия";
+                attribute = "last_name";
                 break;
             case 2:
-                fieldToSort = "first_name";
-                fieldDescription = "Имя";
+                attribute = "first_name";
                 break;
             case 3:
-                fieldToSort = "login";
-                fieldDescription = "Логин";
+                attribute = "login";
                 break;
             case 4:
-                fieldToSort = "password";
-                fieldDescription = "Пароль";
+                attribute = "password";
                 break;
             default:
-                fieldToSort = "last_name";
+                return;
         }
 
-        Collections.sort(userData, new Comparator<JSONObject>() {
-            @Override
-            public int compare(JSONObject user1, JSONObject user2) {
-                String value1 = (String) user1.get(fieldToSort);
-                String value2 = (String) user2.get(fieldToSort);
-
-                int result; // Compare result
-
-                if (directionChoice == 2) {
-                    result = value2.compareTo(value1); // Reverse order for descending
-                } else {
-                    result = value1.compareTo(value2);
-                }
-
-                return result;
-            }
-        });
-
-
-        // Вывод заголовков таблицы
-        System.out.printf("%-5s %-20s %-15s %-15s %-15s\n", "ID", fieldDescription, "Имя", "Логин", "Пароль");
-
-        // Вывод данных в виде таблицы
-        for (int i = userData.size() - 1; i >= 0; i--) {
-            JSONObject userObject = (JSONObject) userData.get(i);
-            System.out.printf("%-5s %-20s %-15s %-15s %-15s\n",
-                    userObject.get("id"),
-                    formatString(userObject.get("last_name").toString(), 20),
-                    formatString(userObject.get("first_name").toString(), 15),
-                    formatString(userObject.get("login").toString(), 15),
-                    formatString(userObject.get("password").toString(), 15));
+        if (directionChoice == 2) {
+            ascending = false;
         }
 
-        System.out.println("Данные успешно отсортированы и выведены в виде таблицы в консоли.");
+        JsonArray data = readJsonData();
+        displaySortedData(data, attribute, ascending);
     }
 
 
-    public static String formatString(String value, int width) {
-        if (value.length() > width) {
-            return value.substring(0, width);
-        } else {
-            return String.format("%-" + width + "s", value);
+    public static void displaySortedData(JsonArray data, String attribute, boolean ascending) {
+        quickSort(data, attribute, ascending);
+
+        AsciiTable table = new AsciiTable();
+        table.addRule();
+        table.addRow("last_name", "first_name", "login", "password"); // Заголовки столбцов
+
+        for (JsonElement element : data) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            table.addRule();
+            table.addRow(jsonObject.get("last_name").getAsString(),
+                    jsonObject.get("first_name").getAsString(),
+                    jsonObject.get("login").getAsString(),
+                    jsonObject.get("password").getAsString());
         }
+        table.addRule();
+
+        System.out.println(table.render());
     }
-
-
-
 
     public static void filterChooseAttribute() {
         while (true) {
@@ -485,17 +492,8 @@ class ConsoleMenu {
             if (attributeChoice == 0) {
                 return;
             }
-
-            filterData(attributeChoice);
         }
     }
-
-    public static void filterData(int attribute) {
-        // Ваш код фильтрации данных здесь
-        // В зависимости от значения "attribute" фильтруйте данные по выбранному атрибуту
-        // Например, вы можете использовать потоки данных (Streams) в Java для фильтрации
-    }
-
 
     public static void findData() {
         System.out.println("Искать по атрибуту...");
@@ -510,13 +508,6 @@ class ConsoleMenu {
             }
         }
         return false;
-    }
-
-
-    public static void showAllUsers() {
-        System.out.println("Показать всех пользователей...");
-        JSONArray userData = readJsonData();
-        printUsersTable(userData);
     }
 
 
