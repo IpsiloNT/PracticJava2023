@@ -3,11 +3,6 @@ import java.util.Scanner;
 
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -465,8 +460,75 @@ class ConsoleMenu {
             if (attributeChoice == 0) {
                 return;
             }
+
+            // Здесь вам нужно вызвать метод filterData, передавая выбранный атрибут
+            filterData(attributeChoice);
         }
     }
+
+
+    public static void filterData(int attributeChoice) {
+        // Чтение данных из JSON-файла
+        JsonArray jsonData = readJsonData();
+
+        // Фильтрация данных в соответствии с выбранным атрибутом
+        JsonArray filteredData = new JsonArray();
+        for (int i = 0; i < jsonData.size(); i++) {
+            JsonObject user = jsonData.get(i).getAsJsonObject();
+            int role = user.get("role").getAsInt();
+            if (attributeChoice == 1 && role == 1) {
+                filteredData.add(user);
+            } else if (attributeChoice == 2 && role == 0) {
+                filteredData.add(user);
+            } else if (attributeChoice == 3 && "disabled".equalsIgnoreCase(user.get("status").getAsString())) {
+                filteredData.add(user);
+            } else if (attributeChoice == 4 && "active".equalsIgnoreCase(user.get("status").getAsString())) {
+                filteredData.add(user);
+            }
+        }
+
+        // Отображение отфильтрованных данных
+        displayFiltered(filteredData);
+    }
+
+    // Метод для отображения данных в виде таблицы
+    private static void displayFiltered(JsonArray data) {
+        AsciiTable table = new AsciiTable();
+        CWC_LongestWordMax cwc = new CWC_LongestWordMax(50);
+        table.getRenderer().setCWC(cwc);
+
+        table.addRule();
+        table.addRow("ID", "Last Name", "First Name", "Role", "Status", "Last Login", "Last Exit", "Login Count", "Logout Count", "Work Time");
+        table.addRule();
+
+        Gson gson = new Gson();
+
+        for (JsonElement element : data) {
+            JsonObject user = element.getAsJsonObject();
+            table.addRow(
+                    getString(user, "id"),
+                    getString(user, "last_name"),
+                    getString(user, "first_name"),
+                    getString(user, "role"),
+                    getString(user, "status"),
+                    getString(user, "last_login"),
+                    getString(user, "last_exit"),
+                    getString(user, "login_count"),
+                    getString(user, "logout_count"),
+                    getString(user, "work_time")
+            );
+            table.addRule();
+        }
+
+        System.out.println(table.render());
+    }
+
+    // Вспомогательный метод для получения строки из JsonObject
+    private static String getString(JsonObject jsonObject, String field) {
+        JsonElement element = jsonObject.get(field);
+        return element != null ? element.getAsString() : "";
+    }
+
 
     public static void findData() {
         System.out.println("Искать по атрибуту...");
