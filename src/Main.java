@@ -285,7 +285,7 @@ class ConsoleMenu {
         } else {
             AsciiTable table = new AsciiTable();
             table.addRule();
-            table.addRow("ID", "Фамилия", "Имя", "Логин", "Роль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Пароль", "Роль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
             table.addRule();
 
             for (int i = 0; i < userData.size(); i++) {
@@ -294,6 +294,7 @@ class ConsoleMenu {
                 String lastName = user.get("last_name").getAsString();
                 String firstName = user.get("first_name").getAsString();
                 String login = user.get("login").getAsString();
+                String password = user.get("password").getAsString();
                 String role = user.get("role").getAsString();
                 String status = user.get("status").getAsString();
                 String lastLogin = user.has("last_login") ? user.get("last_login").getAsString() : "";
@@ -302,7 +303,7 @@ class ConsoleMenu {
                 String logoutCount = user.has("logout_count") ? user.get("logout_count").getAsString() : "";
                 String workTime = user.has("work_time") ? user.get("work_time").getAsString() : "";
 
-                table.addRow(id, lastName, firstName, login, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+                table.addRow(id, lastName, firstName, login, password, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
                 table.addRule();
             }
 
@@ -622,7 +623,60 @@ class ConsoleMenu {
 
     public static void updateUser() {
         System.out.println("Изменить данные пользователя...");
-        // Реализация изменения данных пользователя
+        JsonArray data = readJsonData();
+
+        showAllUsers();
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введите логин пользователя, данные которого вы хотите изменить (или нажмите Enter для отмены): ");
+        String loginToChange = scanner.nextLine();
+
+        JsonObject userToChange = null;
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(loginToChange)) {
+                userToChange = user;
+                break;
+            }
+        }
+
+        if (userToChange != null) {
+            System.out.println("Введите новые данные для пользователя (оставьте поле пустым, чтобы оставить без изменений):");
+            System.out.print("Новая фамилия (" + userToChange.get("last_name").getAsString() + "): ");
+            String newLastName = scanner.nextLine();
+            System.out.print("Новое имя (" + userToChange.get("first_name").getAsString() + "): ");
+            String newFirstName = scanner.nextLine();
+            System.out.print("Новый логин (" + userToChange.get("login").getAsString() + "): ");
+            String newLogin = scanner.nextLine();
+
+            while (true) {
+                System.out.print("Новый пароль (" + userToChange.get("password").getAsString() + "): ");
+                String newPassword = scanner.nextLine();
+                if (!newPassword.isEmpty() && newPassword.length() < 6) {
+                    System.out.println("Пароль должен содержать как минимум 6 символов.");
+                } else {
+                    userToChange.addProperty("password", newPassword);
+                    break;
+                }
+            }
+
+            if (!newLastName.isEmpty()) {
+                userToChange.addProperty("last_name", newLastName);
+            }
+            if (!newFirstName.isEmpty()) {
+                userToChange.addProperty("first_name", newFirstName);
+            }
+            if (!newLogin.isEmpty()) {
+                // Добавьте здесь логику проверки на уникальность логина, если необходимо
+                userToChange.addProperty("login", newLogin);
+            }
+
+            saveJsonData(data);
+            System.out.println("Данные пользователя с логином '" + loginToChange + "' успешно изменены.");
+            showAllUsers();
+        } else if (!loginToChange.isEmpty()) {
+            System.out.println("Пользователь с логином '" + loginToChange + "' не найден.");
+        }
     }
 
     public static void updateUserStatus() {
@@ -666,7 +720,31 @@ class ConsoleMenu {
 
     public static void deleteUser() {
         System.out.println("Удалить пользователя...");
-        // Реализация удаления пользователя
+        JsonArray data = readJsonData();
+
+        showAllUsers();
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введите логин пользователя, которого вы хотите удалить: ");
+        String loginToDelete = scanner.nextLine();
+
+        JsonObject userToDelete = null;
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(loginToDelete)) {
+                userToDelete = user;
+                break;
+            }
+        }
+
+        if (userToDelete != null) {
+            data.remove(userToDelete);
+            saveJsonData(data);
+            System.out.println("Пользователь с логином '" + loginToDelete + "' успешно удален.");
+            showAllUsers();
+        } else {
+            System.out.println("Пользователь с логином '" + loginToDelete + "' не найден.");
+        }
     }
 
     public static void viewStatistics() {
