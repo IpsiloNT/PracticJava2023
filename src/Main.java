@@ -293,7 +293,7 @@ class ConsoleMenu {
         } else {
             AsciiTable table = new AsciiTable();
             table.addRule();
-            table.addRow("ID", "Фамилия", "Имя", "Логин", "Роль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Роль", "Пароль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
             table.addRule();
 
             for (int i = 0; i < userData.size(); i++) {
@@ -302,7 +302,8 @@ class ConsoleMenu {
                 String lastName = user.get("last_name").getAsString();
                 String firstName = user.get("first_name").getAsString();
                 String login = user.get("login").getAsString();
-                String role = user.get("role").getAsString();
+                String password = user.get("password").getAsString();
+                String role = user.get("role").getAsInt() == 1 ? "Администратор" : "Пользователь";
                 String status = user.get("status").getAsString();
                 String lastLogin = user.has("last_login") ? user.get("last_login").getAsString() : "";
                 String lastExit = user.has("last_exit") ? user.get("last_exit").getAsString() : "";
@@ -310,7 +311,7 @@ class ConsoleMenu {
                 String logoutCount = user.has("logout_count") ? user.get("logout_count").getAsString() : "";
                 String workTime = user.has("work_time") ? user.get("work_time").getAsString() : "";
 
-                table.addRow(id, lastName, firstName, login, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+                table.addRow(id, lastName, firstName, login, password, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
                 table.addRule();
             }
 
@@ -321,6 +322,7 @@ class ConsoleMenu {
             System.out.println(table.render());
         }
     }
+
 
     public static void sortFilterOrFind() {
         while (true) {
@@ -374,7 +376,6 @@ class ConsoleMenu {
         }
         return false;
     }
-
 
     public static void createUser() {
         System.out.println("Создание нового пользователя");
