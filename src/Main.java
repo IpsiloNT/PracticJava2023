@@ -10,6 +10,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_LongestWordMax;
+
+
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
     private static JsonArray data;
@@ -282,7 +286,40 @@ class ConsoleMenu {
 
     public static void showAllUsers() {
         System.out.println("Показать всех пользователей");
-        // Реализация показа всех пользователей
+        JsonArray userData = readJsonData();
+
+        if (userData.size() == 0) {
+            System.out.println("Нет доступных пользователей.");
+        } else {
+            AsciiTable table = new AsciiTable();
+            table.addRule();
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Роль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
+            table.addRule();
+
+            for (int i = 0; i < userData.size(); i++) {
+                JsonObject user = userData.get(i).getAsJsonObject();
+                String id = user.get("id").getAsString();
+                String lastName = user.get("last_name").getAsString();
+                String firstName = user.get("first_name").getAsString();
+                String login = user.get("login").getAsString();
+                String role = user.get("role").getAsString();
+                String status = user.get("status").getAsString();
+                String lastLogin = user.has("last_login") ? user.get("last_login").getAsString() : "";
+                String lastExit = user.has("last_exit") ? user.get("last_exit").getAsString() : "";
+                String loginCount = user.has("login_count") ? user.get("login_count").getAsString() : "";
+                String logoutCount = user.has("logout_count") ? user.get("logout_count").getAsString() : "";
+                String workTime = user.has("work_time") ? user.get("work_time").getAsString() : "";
+
+                table.addRow(id, lastName, firstName, login, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+                table.addRule();
+            }
+
+            // Настройка ширины колонок
+            table.getRenderer().setCWC(new CWC_LongestWordMax(50)); // 50 - максимальная ширина столбца
+
+            // Вывод таблицы
+            System.out.println(table.render());
+        }
     }
 
     public static void sortFilterOrFind() {
