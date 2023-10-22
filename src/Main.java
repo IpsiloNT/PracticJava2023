@@ -383,50 +383,24 @@ class ConsoleMenu {
         return getChoice(2); // Получить выбор направления сортировки (1, 2)
     }
 
-
-    public static void quickSort(JsonArray data, String attribute, boolean ascending) {
-        if (data == null || data.size() <= 1) {
-            return;
-        }
-        quickSortRecursive(data, attribute, ascending, 0, data.size() - 1);
-    }
-
-    private static void quickSortRecursive(JsonArray data, String attribute, boolean ascending, int left, int right) {
-        if (left < right) {
-            int partitionIndex = partition(data, attribute, ascending, left, right);
-            quickSortRecursive(data, attribute, ascending, left, partitionIndex - 1);
-            quickSortRecursive(data, attribute, ascending, partitionIndex + 1, right);
-        }
-    }
-
-    private static int partition(JsonArray data, String attribute, boolean ascending, int left, int right) {
-        JsonObject pivot = data.get(right).getAsJsonObject();
-        String pivotValue = pivot.get(attribute).getAsString();
-        int i = (left - 1);
-
-        for (int j = left; j < right; j++) {
-            JsonObject current = data.get(j).getAsJsonObject();
-            String currentValue = current.get(attribute).getAsString();
-            int comparisonResult = currentValue.compareTo(pivotValue);
-
-            if ((ascending && comparisonResult < 0) || (!ascending && comparisonResult > 0)) {
-                i++;
-                // Swap data[i] and data[j]
-                JsonElement temp = data.get(i);
-                data.set(i, data.get(j));
-                data.set(j, temp);
+    public static void bubbleSort(JsonArray data, String attribute, boolean ascending) {
+        int n = data.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                JsonObject current = data.get(j).getAsJsonObject();
+                JsonObject next = data.get(j + 1).getAsJsonObject();
+                String currentValue = current.get(attribute).getAsString();
+                String nextValue = next.get(attribute).getAsString();
+                int comparisonResult = currentValue.compareTo(nextValue);
+                if ((ascending && comparisonResult > 0) || (!ascending && comparisonResult < 0)) {
+                    // Swap data[j] and data[j+1]
+                    JsonElement temp = data.get(j);
+                    data.set(j, data.get(j + 1));
+                    data.set(j + 1, temp);
+                }
             }
         }
-
-        // Swap data[i+1] and data[right] (pivot)
-        JsonElement temp = data.get(i + 1);
-        data.set(i + 1, data.get(right));
-        data.set(right, temp);
-
-        return i + 1;
     }
-
-
 
     public static void sortData(int fieldChoice, int directionChoice) {
         String attribute;
@@ -457,9 +431,8 @@ class ConsoleMenu {
         displaySortedData(data, attribute, ascending);
     }
 
-
     public static void displaySortedData(JsonArray data, String attribute, boolean ascending) {
-        quickSort(data, attribute, ascending);
+        bubbleSort(data, attribute, ascending);
 
         AsciiTable table = new AsciiTable();
         table.addRule();
