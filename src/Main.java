@@ -14,10 +14,27 @@ import java.util.Date;
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
     private static JsonArray data;
+    private static boolean isLoggedIn = false;
+    private static String loggedInUser = "";
 
     public static void main(String[] args) {
-        data = readJsonData(); // Считываем данные из JSON-файла
+        // Регистрируем Shutdown Hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            // Этот код выполнится при завершении программы
+            System.out.println("Завершение программы...");
 
+            // Получить текущее время
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentDateTime = sdf.format(new Date());
+
+            // Обновляем JSON-файл, если пользователь был вошедшим
+            if (isLoggedIn) {
+                // Вызываем метод logout с параметрами jsonData и login
+                logout(data, loggedInUser);
+            }
+        }));
+
+        data = readJsonData();
         while (true) {
             System.out.println("Выберите действие: ");
             System.out.println("1. Войти");
@@ -37,6 +54,7 @@ class ConsoleMenu {
             }
         }
     }
+
 
     private static int getChoice(int maxChoice) {
         while (true) {
@@ -77,6 +95,53 @@ class ConsoleMenu {
         }
     }
 
+    public static void login(JsonArray jsonData, String login) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDateTime = sdf.format(new Date());
+
+        for (JsonElement element : jsonData) {
+            JsonObject userObject = element.getAsJsonObject();
+            if (userObject.get("login").getAsString().equals(login)) {
+                userObject.addProperty("last_login", currentDateTime);
+
+                // Увеличиваем счетчик входов
+                if (userObject.has("login_count")) {
+                    int loginCount = userObject.get("login_count").getAsInt();
+                    userObject.addProperty("login_count", loginCount + 1);
+                } else {
+                    userObject.addProperty("login_count", 1);
+                }
+            }
+        }
+        saveJsonData(jsonData);
+        isLoggedIn = true;
+        loggedInUser = login;
+    }
+
+
+    public static void logout(JsonArray jsonData, String login) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDateTime = sdf.format(new Date());
+
+        for (JsonElement element : jsonData) {
+            JsonObject userObject = element.getAsJsonObject();
+            if (userObject.get("login").getAsString().equals(login)) {
+                userObject.addProperty("last_exit", currentDateTime);
+
+                // Увеличиваем счетчик выходов
+                if (userObject.has("logout_count")) {
+                    int logoutCount = userObject.get("logout_count").getAsInt();
+                    userObject.addProperty("logout_count", logoutCount + 1);
+                } else {
+                    userObject.addProperty("logout_count", 1);
+                }
+            }
+        }
+        saveJsonData(jsonData);
+        isLoggedIn = false;
+        loggedInUser = "";
+    }
+
     private static int authenticateUser(String login, String password) {
         if (data != null) {
             for (int i = 0; i < data.size(); i++) {
@@ -106,30 +171,15 @@ class ConsoleMenu {
 
                 // Обновляем информацию о входе в JSON-файле
                 JsonArray jsonData = readJsonData();
-                for (JsonElement element : jsonData) {
-                    JsonObject userObject = element.getAsJsonObject();
-                    if (userObject.get("login").getAsString().equals(login)) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        String currentDateTime = sdf.format(new Date());
-                        userObject.addProperty("last_login", currentDateTime);
 
-                        // Увеличиваем счетчик входов
-                        if (userObject.has("login_count")) {
-                            int loginCount = userObject.get("login_count").getAsInt();
-                            userObject.addProperty("login_count", loginCount + 1);
-                        } else {
-                            userObject.addProperty("login_count", 1);
-                        }
-                    }
-                }
-                saveJsonData(jsonData);
+                login(jsonData, login);
 
                 if (role == 1) {
                     // Администратор
-                    adminMenu();
+                    adminMenu(jsonData, login);
                 } else if (role == 0) {
                     // Пользователь
-                    userMenu();
+                    userMenu(jsonData, login);
                 }
             } else {
                 System.out.println("Неверный логин или пароль. Попробуйте снова.");
@@ -138,7 +188,7 @@ class ConsoleMenu {
     }
 
 
-    public static void userMenu() {
+    public static void userMenu(JsonArray jsonData, String login) {
         while (true) {
             System.out.println("Меню пользователя:");
             System.out.println("1. Показать доступные документы");
@@ -155,12 +205,14 @@ class ConsoleMenu {
                     dataManagement();
                     break;
                 case 0:
+                    logout(jsonData, login);
                     return;
                 default:
                     System.out.println("Некорректный выбор. Попробуйте снова.");
             }
         }
     }
+
 
     public static void showAvailableDocuments() {
         while (true) {
@@ -233,7 +285,8 @@ class ConsoleMenu {
         // Реализация фильтрации данных для формирования документа
     }
 
-    public static void adminMenu() {
+
+    public static void adminMenu(JsonArray jsonData, String login) {
         while (true) {
             System.out.println("Меню администратора:");
             System.out.println("1. Управление пользователями");
@@ -258,6 +311,7 @@ class ConsoleMenu {
                     exportData();
                     break;
                 case 0:
+                    logout(jsonData, login);
                     return;
                 default:
                     System.out.println("Некорректный выбор. Попробуйте снова.");
