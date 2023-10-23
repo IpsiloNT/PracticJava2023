@@ -472,7 +472,7 @@ class ConsoleMenu {
                 filteredData.add(user);
             } else if (attributeChoice == 2 && role == 0) {
                 filteredData.add(user);
-            } else if (attributeChoice == 3 && "disabled".equalsIgnoreCase(user.get("status").getAsString())) {
+            } else if (attributeChoice == 3 && "inactive".equalsIgnoreCase(user.get("status").getAsString())) {
                 filteredData.add(user);
             } else if (attributeChoice == 4 && "active".equalsIgnoreCase(user.get("status").getAsString())) {
                 filteredData.add(user);
@@ -712,6 +712,7 @@ class ConsoleMenu {
 
                 saveJsonData(data);
                 System.out.println("Статус пользователя с логином '" + loginToChangeStatus + "' изменен на '" + newStatus + "'.");
+                showAllUsers();
             } else {
                 System.out.println("Пользователь с логином '" + loginToChangeStatus + "' не найден.");
             }
