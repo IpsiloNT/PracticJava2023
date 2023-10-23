@@ -1,10 +1,20 @@
+import java.awt.*;
 import java.io.FileReader;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMax;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import java.io.*;
 import com.google.gson.*;
 
+import javax.swing.*;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Scanner;
 
 import java.text.SimpleDateFormat;
@@ -210,7 +220,6 @@ class ConsoleMenu {
         }
     }
 
-
     public static void userMenu(JsonArray jsonData, String login) {
         while (true) {
             System.out.println("Меню пользователя:");
@@ -314,7 +323,7 @@ class ConsoleMenu {
             System.out.println("Меню администратора:");
             System.out.println("1. Управление пользователями");
             System.out.println("2. Просмотр статистики");
-            System.out.println("3. Графики работы");
+            System.out.println("3. Графики кол-ва входов и выходов");
             System.out.println("4. Экспорт данных");
             System.out.println("0. Выйти из аккаунта");
 
@@ -979,18 +988,18 @@ class ConsoleMenu {
     public static void generateChartForAllUsers() {
         while (true) {
             System.out.println("Для всех пользователей");
-            System.out.println("1. Количество входов пользователей на текущей неделе");
-            System.out.println("2. Количество входов пользователей в разрезе месяца");
+            System.out.println("1. Количество входов и выходов пользователей на текущей неделе");
+            System.out.println("2. Количество входов и выходов пользователей в разрезе месяца");
             System.out.println("0. Выйти в предыдущее меню");
 
             int choice = getChoice(2); // Получить выбор пользователя (0, 1 или 2)
 
             switch (choice) {
                 case 1:
-                    generateEntryCountThisWeek();
+                    generateEntryAndExitCountThisWeek();
                     break;
                 case 2:
-                    generateEntryCountThisMonth();
+                    generateEntryAndExitCountThisMonth();
                     break;
                 case 0:
                     return;
@@ -1001,20 +1010,120 @@ class ConsoleMenu {
         }
     }
 
-    public static void generateEntryCountThisWeek() {
-        System.out.println("Построение графика количества входов на текущей неделе...");
-        // Реализация построения графика количества входов на текущей неделе
+    public static void generateEntryAndExitCountThisWeek() {
+        System.out.println("Построение графика количества входов и выходов на текущей неделе");
+
+        // Создайте пустой график
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Получите текущую дату для сравнения с датой входа и выхода пользователей
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date currentDate = new Date();
+
+        // Перебирайте пользователей и добавляйте данные о количестве входов и выходов на текущей неделе
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            String username = user.get("login").getAsString();
+            int loginCount = user.get("login_count").getAsInt();
+            int logoutCount = user.get("logout_count").getAsInt();
+            String lastLogin = user.get("last_login").getAsString();
+            String lastExit = user.get("last_exit").getAsString();
+
+            if (!lastLogin.isEmpty() && !lastExit.isEmpty()) {
+                try {
+                    // Преобразуйте дату последнего входа и выхода в объекты Date
+                    Date lastLoginDate = dateFormat.parse(lastLogin);
+                    Date lastExitDate = dateFormat.parse(lastExit);
+
+                    // Проверьте, принадлежит ли дата входа и выхода к текущей неделе
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(currentDate);
+                    int currentWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+
+                    calendar.setTime(lastLoginDate);
+                    int loginWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+
+                    calendar.setTime(lastExitDate);
+                    int exitWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+
+                    // Если дата входа и выхода принадлежат текущей неделе, добавьте данные в набор данных
+                    if (currentWeek == loginWeek && currentWeek == exitWeek) {
+                        dataset.addValue(loginCount, "Входы", username);
+                        dataset.addValue(logoutCount, "Выходы", username);
+                    }
+                } catch (ParseException e) {
+                    // Обработка ошибки преобразования даты, если необходимо
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // Создайте график
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Количество входов и выходов на текущей неделе", // Заголовок графика
+                "Пользователи", // Название оси X
+                "Количество", // Название оси Y
+                dataset, // Набор данных
+                PlotOrientation.VERTICAL, // Ориентация графика
+                true, true, false);
+
+        // Отобразите график
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.getContentPane().add(chartPanel);
+        frame.pack();
+        frame.setVisible(true);
     }
 
-    public static void generateEntryCountThisMonth() {
-        System.out.println("Количество входов пользователей в разрезе месяца");
+    public static void generateEntryAndExitCountThisMonth() {
+        System.out.println("Количество входов и выходов пользователей в разрезе месяца");
         System.out.println("Выберите месяц (от 1 до 12):");
 
         int month = getChoice(12); // Получить выбор месяца (от 1 до 12)
 
         if (month >= 1 && month <= 12) {
-            System.out.println("Построение графика количества входов в разрезе выбранного месяца");
-            // Реализация построения графика количества входов в разрезе выбранного месяца
+            // Чтение данных из JSON-файла
+            JsonArray data = readJsonData();
+
+            // Создание объекта DefaultCategoryDataset
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+            // Перебираем данные и добавляем количество входов и выходов в выбранном месяце в датасет
+            for (JsonElement element : data) {
+                JsonObject user = element.getAsJsonObject();
+                String lastLogin = user.get("last_login").getAsString();
+                if (!lastLogin.isEmpty()) {
+                    int userMonth = Integer.parseInt(lastLogin.substring(5, 7));
+                    if (userMonth == month) {
+                        int loginCount = user.get("login_count").getAsInt();
+                        int logoutCount = user.get("logout_count").getAsInt();
+                        dataset.addValue(loginCount, "Входы", user.get("first_name").getAsString());
+                        dataset.addValue(logoutCount, "Выходы", user.get("first_name").getAsString());
+                    }
+                }
+            }
+
+            // Создание графика
+            JFreeChart chart = ChartFactory.createBarChart(
+                    "Статистика входов и выходов", // Заголовок графика
+                    "Пользователь", // Метка оси X
+                    "Количество", // Метка оси Y
+                    dataset, // Данные
+                    PlotOrientation.VERTICAL, true, true, false);
+
+            // Создание панели для отображения графика
+            ChartPanel chartPanel = new ChartPanel(chart);
+            chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+
+            // Отображение графика
+            JFrame frame = new JFrame("График входов и выходов пользователей");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.getContentPane().add(chartPanel);
+            frame.pack();
+            frame.setVisible(true);
         } else {
             System.out.println("Некорректный выбор месяца.");
         }

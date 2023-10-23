@@ -7,11 +7,11 @@
     "password": "d",
     "role": 1,
     "status": "active",
-    "last_login": "2023-10-23 17:08:03",
-    "last_exit": "2023-10-23 18:45:45",
-    "login_count": 147,
-    "logout_count": 86,
-    "work_time": 4.682777777777778
+    "last_login": "2023-10-23 19:53:31",
+    "last_exit": "2023-10-23 19:52:37",
+    "login_count": 148,
+    "logout_count": 101,
+    "work_time": 42.61555555555556
   },
   {
     "id": 2,
