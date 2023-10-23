@@ -138,8 +138,6 @@ class ConsoleMenu {
             }
         }
         saveJsonData(jsonData);
-        isLoggedIn = false;
-        loggedInUser = "";
     }
 
     private static int authenticateUser(String login, String password) {
@@ -696,7 +694,7 @@ class ConsoleMenu {
             newUser.addProperty("last_exit", "");
             newUser.addProperty("login_count", 0);
             newUser.addProperty("logout_count", 0);
-            newUser.addProperty("work_time", 0);
+            newUser.addProperty("work_time", 0.0);
 
             users.add(newUser);
 
