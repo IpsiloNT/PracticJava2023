@@ -1,18 +1,14 @@
 import java.io.FileReader;
-import com.google.gson.*;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMax;
 
 import java.io.*;
 import com.google.gson.*;
 
-import de.vandermeer.asciitable.AsciiTable;
-import de.vandermeer.asciitable.CWC_LongestWordMax;
 import java.util.Scanner;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 
 class ConsoleMenu {
@@ -108,6 +104,26 @@ class ConsoleMenu {
             if (role != -1) {
                 System.out.println("Вход выполнен успешно.");
 
+                // Обновляем информацию о входе в JSON-файле
+                JsonArray jsonData = readJsonData();
+                for (JsonElement element : jsonData) {
+                    JsonObject userObject = element.getAsJsonObject();
+                    if (userObject.get("login").getAsString().equals(login)) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String currentDateTime = sdf.format(new Date());
+                        userObject.addProperty("last_login", currentDateTime);
+
+                        // Увеличиваем счетчик входов
+                        if (userObject.has("login_count")) {
+                            int loginCount = userObject.get("login_count").getAsInt();
+                            userObject.addProperty("login_count", loginCount + 1);
+                        } else {
+                            userObject.addProperty("login_count", 1);
+                        }
+                    }
+                }
+                saveJsonData(jsonData);
+
                 if (role == 1) {
                     // Администратор
                     adminMenu();
@@ -120,6 +136,7 @@ class ConsoleMenu {
             }
         }
     }
+
 
     public static void userMenu() {
         while (true) {
@@ -619,6 +636,13 @@ class ConsoleMenu {
             newUser.addProperty("password", password);
             newUser.addProperty("role", role);
             newUser.addProperty("status", "active");
+
+            // Добавляем пустые поля
+            newUser.addProperty("last_login", "");
+            newUser.addProperty("last_exit", "");
+            newUser.addProperty("login_count", 0);
+            newUser.addProperty("logout_count", 0);
+            newUser.addProperty("work_time", 0);
 
             users.add(newUser);
 
