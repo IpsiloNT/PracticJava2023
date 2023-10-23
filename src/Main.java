@@ -412,6 +412,13 @@ class ConsoleMenu {
             newUser.addProperty("role", role);
             newUser.addProperty("status", "active");
 
+            // Добавляем пустые поля
+            newUser.addProperty("last_login", "");
+            newUser.addProperty("last_exit", "");
+            newUser.addProperty("login_count", 0);
+            newUser.addProperty("logout_count", 0);
+            newUser.addProperty("work_time", 0);
+
             users.add(newUser);
 
             saveJsonData(users);
