@@ -95,6 +95,30 @@ class ConsoleMenu {
         }
     }
 
+    public static void updateWorkTime(JsonArray jsonData, String login) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDateTime = sdf.format(new Date());
+
+        for (JsonElement element : jsonData) {
+            JsonObject userObject = element.getAsJsonObject();
+            if (userObject.get("login").getAsString().equals(login)) {
+                String lastLogin = userObject.get("last_login").getAsString();
+                if (!lastLogin.isEmpty()) {
+                    try {
+                        Date loginTime = sdf.parse(lastLogin);
+                        Date currentTime = sdf.parse(currentDateTime);
+                        long diff = currentTime.getTime() - loginTime.getTime();
+                        double hoursWorked = (double) diff / (60 * 60 * 1000); // Время в часах
+                        userObject.addProperty("work_time", userObject.get("work_time").getAsDouble() + hoursWorked);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        saveJsonData(jsonData);
+    }
+
     public static void login(JsonArray jsonData, String login) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDateTime = sdf.format(new Date());
@@ -113,11 +137,10 @@ class ConsoleMenu {
                 }
             }
         }
-        saveJsonData(jsonData);
+        updateWorkTime(jsonData, login); // Обновляем время работы
         isLoggedIn = true;
         loggedInUser = login;
     }
-
 
     public static void logout(JsonArray jsonData, String login) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -137,8 +160,10 @@ class ConsoleMenu {
                 }
             }
         }
+        updateWorkTime(jsonData, login); // Обновляем время работы
         saveJsonData(jsonData);
     }
+
 
     private static int authenticateUser(String login, String password) {
         if (data != null) {

@@ -50,9 +50,9 @@
     "role": 0,
     "status": "active",
     "last_login": "2023-10-23 18:14:18",
-    "last_exit": "2023-10-23 18:19:53",
+    "last_exit": "2023-10-23 18:35:00",
     "login_count": 1,
-    "logout_count": 2,
-    "work_time": 0.0
+    "logout_count": 5,
+    "work_time": 0.345
   }
 ]
