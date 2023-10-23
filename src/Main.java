@@ -3,6 +3,8 @@ import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMax;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 
@@ -61,6 +63,46 @@ class ConsoleMenu {
         return new JsonArray();
     }
 
+    private static void loginUser(String login) {
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(login)) {
+                int loginCount = user.get("login_count").getAsInt();
+                user.addProperty("login_count", loginCount + 1);
+
+                // Обновите время последнего входа
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String currentTime = sdf.format(new Date());
+                user.addProperty("last_login", currentTime);
+
+                // Сохраните изменения в JSON-файле
+                saveJsonData(data);
+                return;
+            }
+        }
+    }
+
+    private static void logoutUser(String login) {
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(login)) {
+                int logoutCount = user.get("logout_count").getAsInt();
+                user.addProperty("logout_count", logoutCount + 1);
+
+                // Обновите время последнего выхода
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String currentTime = sdf.format(new Date());
+                user.addProperty("last_exit", currentTime);
+
+                // Сохраните изменения в JSON-файле
+                saveJsonData(data);
+                return;
+            }
+        }
+    }
+
+
+
     // Метод для сохранения данных в JSON-файл
     private static void saveJsonData(JsonArray data) {
         try (Writer writer = new FileWriter("users.json")) {
@@ -102,9 +144,11 @@ class ConsoleMenu {
                 if (role == 1) {
                     // Администратор
                     adminMenu();
+                    loginUser(login);
                 } else if (role == 0) {
                     // Пользователь
                     userMenu();
+                    loginUser(login);
                 }
             } else {
                 System.out.println("Неверный логин или пароль. Попробуйте снова.");
