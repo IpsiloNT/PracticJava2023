@@ -1,14 +1,23 @@
 import java.io.FileReader;
+
+import java.io.*;
+import com.google.gson.*;
+
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_LongestWordMax;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 import java.io.*;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+//import com.google.gson.JsonArray;
+//import com.google.gson.JsonElement;
+//import com.google.gson.JsonObject;
+//import com.google.gson.JsonParser;
+//import com.google.gson.Gson;
+//import com.google.gson.GsonBuilder;
 
 class ConsoleMenu {
     private static final Scanner scanner = new Scanner(System.in);
@@ -65,6 +74,46 @@ class ConsoleMenu {
         return new JsonArray();
     }
 
+    private static void loginUser(String login) {
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(login)) {
+                int loginCount = user.get("login_count").getAsInt();
+                user.addProperty("login_count", loginCount + 1);
+
+                // Обновите время последнего входа
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String currentTime = sdf.format(new Date());
+                user.addProperty("last_login", currentTime);
+
+                // Сохраните изменения в JSON-файле
+                saveJsonData(data);
+                return;
+            }
+        }
+    }
+
+    private static void logoutUser(String login) {
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(login)) {
+                int logoutCount = user.get("logout_count").getAsInt();
+                user.addProperty("logout_count", logoutCount + 1);
+
+                // Обновите время последнего выхода
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String currentTime = sdf.format(new Date());
+                user.addProperty("last_exit", currentTime);
+
+                // Сохраните изменения в JSON-файле
+                saveJsonData(data);
+                return;
+            }
+        }
+    }
+
+
+
     // Метод для сохранения данных в JSON-файл
     private static void saveJsonData(JsonArray data) {
         try (Writer writer = new FileWriter("users.json")) {
@@ -106,9 +155,11 @@ class ConsoleMenu {
                 if (role == 1) {
                     // Администратор
                     adminMenu();
+                    loginUser(login);
                 } else if (role == 0) {
                     // Пользователь
                     userMenu();
+                    loginUser(login);
                 }
             } else {
                 System.out.println("Неверный логин или пароль. Попробуйте снова.");
@@ -267,7 +318,7 @@ class ConsoleMenu {
                     updateUser();
                     break;
                 case 4:
-                    changeUserStatus();
+                    updateUserStatus();
                     break;
                 case 5:
                     deleteUser();
@@ -282,7 +333,41 @@ class ConsoleMenu {
 
     public static void showAllUsers() {
         System.out.println("Показать всех пользователей");
-        // Реализация показа всех пользователей
+        JsonArray userData = readJsonData();
+
+        if (userData.size() == 0) {
+            System.out.println("Нет доступных пользователей.");
+        } else {
+            AsciiTable table = new AsciiTable();
+            table.addRule();
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Пароль", "Роль", "Статус", "Последний вход", "Последний выход", "Кол-во входов", "Кол-во выходов", "Время работы");
+            table.addRule();
+
+            for (int i = 0; i < userData.size(); i++) {
+                JsonObject user = userData.get(i).getAsJsonObject();
+                String id = user.get("id").getAsString();
+                String lastName = user.get("last_name").getAsString();
+                String firstName = user.get("first_name").getAsString();
+                String login = user.get("login").getAsString();
+                String password = user.get("password").getAsString();
+                String role = user.get("role").getAsString();
+                String status = user.get("status").getAsString();
+                String lastLogin = user.has("last_login") ? user.get("last_login").getAsString() : "";
+                String lastExit = user.has("last_exit") ? user.get("last_exit").getAsString() : "";
+                String loginCount = user.has("login_count") ? user.get("login_count").getAsString() : "";
+                String logoutCount = user.has("logout_count") ? user.get("logout_count").getAsString() : "";
+                String workTime = user.has("work_time") ? user.get("work_time").getAsString() : "";
+
+                table.addRow(id, lastName, firstName, login, password, role, status, lastLogin, lastExit, loginCount, logoutCount, workTime);
+                table.addRule();
+            }
+
+            // Настройка ширины колонок
+            table.getRenderer().setCWC(new CWC_LongestWordMax(50)); // 50 - максимальная ширина столбца
+
+            // Вывод таблицы
+            System.out.println(table.render());
+        }
     }
 
     public static void sortFilterOrFind() {
@@ -297,10 +382,10 @@ class ConsoleMenu {
 
             switch (choice) {
                 case 1:
-                    sortData();
+                    sortChooseAttribute();
                     break;
                 case 2:
-                    filterData();
+                    filterChooseAttribute();
                     break;
                 case 3:
                     findData();
@@ -313,14 +398,182 @@ class ConsoleMenu {
         }
     }
 
-    public static void sortData() {
-        System.out.println("Отсортировать данные...");
-        // Реализация отсортировки данных
+    public static void sortChooseAttribute() {
+        while (true) {
+            System.out.println("Выберите поле для сортировки");
+            System.out.println("1. По фамилии");
+            System.out.println("2. По имени");
+            System.out.println("3. По логину");
+            System.out.println("4. По паролю");
+            System.out.println("0. Выйти в предыдущее меню");
+
+            int fieldChoice = getChoice(4); // Получить выбор поля для сортировки (0, 1, 2, 3, 4)
+
+            if (fieldChoice == 0) {
+                return;
+            }
+
+            int directionChoice = getSortDirection(); // Получить выбор направления сортировки
+
+            sortData(fieldChoice, directionChoice);
+        }
     }
 
-    public static void filterData() {
-        System.out.println("Отфильтровать данные...");
-        // Реализация фильтрации данных
+    public static int getSortDirection() {
+        System.out.println("Выберите направление сортировки");
+        System.out.println("1. По возрастанию");
+        System.out.println("2. По убыванию");
+        return getChoice(2); // Получить выбор направления сортировки (1, 2)
+    }
+
+    public static void bubbleSort(JsonArray data, String attribute, boolean ascending) {
+        int n = data.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                JsonObject current = data.get(j).getAsJsonObject();
+                JsonObject next = data.get(j + 1).getAsJsonObject();
+                String currentValue = current.get(attribute).getAsString();
+                String nextValue = next.get(attribute).getAsString();
+                int comparisonResult = currentValue.compareTo(nextValue);
+                if ((ascending && comparisonResult > 0) || (!ascending && comparisonResult < 0)) {
+                    // Swap data[j] and data[j+1]
+                    JsonElement temp = data.get(j);
+                    data.set(j, data.get(j + 1));
+                    data.set(j + 1, temp);
+                }
+            }
+        }
+    }
+
+    public static void sortData(int fieldChoice, int directionChoice) {
+        String attribute;
+        boolean ascending = true;
+
+        switch (fieldChoice) {
+            case 1:
+                attribute = "last_name";
+                break;
+            case 2:
+                attribute = "first_name";
+                break;
+            case 3:
+                attribute = "login";
+                break;
+            case 4:
+                attribute = "password";
+                break;
+            default:
+                return;
+        }
+
+        if (directionChoice == 2) {
+            ascending = false;
+        }
+
+        JsonArray data = readJsonData();
+        displaySortedData(data, attribute, ascending);
+    }
+
+    public static void displaySortedData(JsonArray data, String attribute, boolean ascending) {
+        bubbleSort(data, attribute, ascending);
+
+        AsciiTable table = new AsciiTable();
+        table.addRule();
+        table.addRow("last_name", "first_name", "login", "password"); // Заголовки столбцов
+
+        for (JsonElement element : data) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            table.addRule();
+            table.addRow(jsonObject.get("last_name").getAsString(),
+                    jsonObject.get("first_name").getAsString(),
+                    jsonObject.get("login").getAsString(),
+                    jsonObject.get("password").getAsString());
+        }
+        table.addRule();
+
+        System.out.println(table.render());
+    }
+
+    public static void filterChooseAttribute() {
+        while (true) {
+            System.out.println("Выберите атрибут для фильтрации");
+            System.out.println("1. Администраторы");
+            System.out.println("2. Пользователи");
+            System.out.println("3. Отключенные");
+            System.out.println("4. Включенные");
+            System.out.println("0. Выйти в предыдущее меню");
+
+            int attributeChoice = getChoice(4); // Получить выбор атрибута для фильтрации (0, 1, 2, 3, 4)
+
+            if (attributeChoice == 0) {
+                return;
+            }
+
+            // Здесь вам нужно вызвать метод filterData, передавая выбранный атрибут
+            filterData(attributeChoice);
+        }
+    }
+
+    public static void filterData(int attributeChoice) {
+        // Чтение данных из JSON-файла
+        JsonArray jsonData = readJsonData();
+
+        // Фильтрация данных в соответствии с выбранным атрибутом
+        JsonArray filteredData = new JsonArray();
+        for (int i = 0; i < jsonData.size(); i++) {
+            JsonObject user = jsonData.get(i).getAsJsonObject();
+            int role = user.get("role").getAsInt();
+            if (attributeChoice == 1 && role == 1) {
+                filteredData.add(user);
+            } else if (attributeChoice == 2 && role == 0) {
+                filteredData.add(user);
+            } else if (attributeChoice == 3 && "inactive".equalsIgnoreCase(user.get("status").getAsString())) {
+                filteredData.add(user);
+            } else if (attributeChoice == 4 && "active".equalsIgnoreCase(user.get("status").getAsString())) {
+                filteredData.add(user);
+            }
+        }
+
+        // Отображение отфильтрованных данных
+        displayFiltered(filteredData);
+    }
+
+    // Метод для отображения данных в виде таблицы
+    private static void displayFiltered(JsonArray data) {
+        AsciiTable table = new AsciiTable();
+        CWC_LongestWordMax cwc = new CWC_LongestWordMax(50);
+        table.getRenderer().setCWC(cwc);
+
+        table.addRule();
+        table.addRow("ID", "Last Name", "First Name", "Role", "Status", "Last Login", "Last Exit", "Login Count", "Logout Count", "Work Time");
+        table.addRule();
+
+        Gson gson = new Gson();
+
+        for (JsonElement element : data) {
+            JsonObject user = element.getAsJsonObject();
+            table.addRow(
+                    getString(user, "id"),
+                    getString(user, "last_name"),
+                    getString(user, "first_name"),
+                    getString(user, "role"),
+                    getString(user, "status"),
+                    getString(user, "last_login"),
+                    getString(user, "last_exit"),
+                    getString(user, "login_count"),
+                    getString(user, "logout_count"),
+                    getString(user, "work_time")
+            );
+            table.addRule();
+        }
+
+        System.out.println(table.render());
+    }
+
+    // Вспомогательный метод для получения строки из JsonObject
+    private static String getString(JsonObject jsonObject, String field) {
+        JsonElement element = jsonObject.get(field);
+        return element != null ? element.getAsString() : "";
     }
 
     public static void findData() {
@@ -337,6 +590,7 @@ class ConsoleMenu {
         }
         return false;
     }
+
 
     public static void createUser() {
         System.out.println("Создание нового пользователя");
@@ -431,17 +685,129 @@ class ConsoleMenu {
 
     public static void updateUser() {
         System.out.println("Изменить данные пользователя...");
-        // Реализация изменения данных пользователя
+        JsonArray data = readJsonData();
+
+        showAllUsers();
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введите логин пользователя, данные которого вы хотите изменить (или нажмите Enter для отмены): ");
+        String loginToChange = scanner.nextLine();
+
+        JsonObject userToChange = null;
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(loginToChange)) {
+                userToChange = user;
+                break;
+            }
+        }
+
+        if (userToChange != null) {
+            System.out.println("Введите новые данные для пользователя (оставьте поле пустым, чтобы оставить без изменений):");
+            System.out.print("Новая фамилия (" + userToChange.get("last_name").getAsString() + "): ");
+            String newLastName = scanner.nextLine();
+            System.out.print("Новое имя (" + userToChange.get("first_name").getAsString() + "): ");
+            String newFirstName = scanner.nextLine();
+            System.out.print("Новый логин (" + userToChange.get("login").getAsString() + "): ");
+            String newLogin = scanner.nextLine();
+
+            while (true) {
+                System.out.print("Новый пароль (" + userToChange.get("password").getAsString() + "): ");
+                String newPassword = scanner.nextLine();
+                if (!newPassword.isEmpty() && newPassword.length() < 6) {
+                    System.out.println("Пароль должен содержать как минимум 6 символов.");
+                } else {
+                    userToChange.addProperty("password", newPassword);
+                    break;
+                }
+            }
+
+            if (!newLastName.isEmpty()) {
+                userToChange.addProperty("last_name", newLastName);
+            }
+            if (!newFirstName.isEmpty()) {
+                userToChange.addProperty("first_name", newFirstName);
+            }
+            if (!newLogin.isEmpty()) {
+                // Добавьте здесь логику проверки на уникальность логина, если необходимо
+                userToChange.addProperty("login", newLogin);
+            }
+
+            saveJsonData(data);
+            System.out.println("Данные пользователя с логином '" + loginToChange + "' успешно изменены.");
+            showAllUsers();
+        } else if (!loginToChange.isEmpty()) {
+            System.out.println("Пользователь с логином '" + loginToChange + "' не найден.");
+        }
     }
 
-    public static void changeUserStatus() {
+    public static void updateUserStatus() {
         System.out.println("Изменить статус пользователя...");
-        // Реализация изменения статуса пользователя
+
+        JsonArray data = readJsonData();
+        showAllUsers();
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.print("Введите логин пользователя, статус которого вы хотите изменить (или нажмите Enter для отмены): ");
+            String loginToChangeStatus = scanner.nextLine();
+
+            if (loginToChangeStatus.isEmpty()) {
+                break; // Пользователь нажал Enter, выходим из цикла
+            }
+
+            JsonObject userToChangeStatus = null;
+
+            for (JsonElement element : data) {
+                JsonObject user = element.getAsJsonObject();
+                if (user.has("login") && user.get("login").getAsString().equals(loginToChangeStatus)) {
+                    userToChangeStatus = user;
+                    break;
+                }
+            }
+
+            if (userToChangeStatus != null) {
+                String currentStatus = userToChangeStatus.get("status").getAsString();
+                String newStatus = currentStatus.equals("active") ? "inactive" : "active";
+                userToChangeStatus.addProperty("status", newStatus);
+
+                saveJsonData(data);
+                System.out.println("Статус пользователя с логином '" + loginToChangeStatus + "' изменен на '" + newStatus + "'.");
+                showAllUsers();
+            } else {
+                System.out.println("Пользователь с логином '" + loginToChangeStatus + "' не найден.");
+            }
+        }
     }
 
     public static void deleteUser() {
         System.out.println("Удалить пользователя...");
-        // Реализация удаления пользователя
+        JsonArray data = readJsonData();
+
+        showAllUsers();
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Введите логин пользователя, которого вы хотите удалить: ");
+        String loginToDelete = scanner.nextLine();
+
+        JsonObject userToDelete = null;
+        for (JsonElement userElement : data) {
+            JsonObject user = userElement.getAsJsonObject();
+            if (user.get("login").getAsString().equals(loginToDelete)) {
+                userToDelete = user;
+                break;
+            }
+        }
+
+        if (userToDelete != null) {
+            data.remove(userToDelete);
+            saveJsonData(data);
+            System.out.println("Пользователь с логином '" + loginToDelete + "' успешно удален.");
+            showAllUsers();
+        } else {
+            System.out.println("Пользователь с логином '" + loginToDelete + "' не найден.");
+        }
     }
 
     public static void viewStatistics() {

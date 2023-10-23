@@ -28,11 +28,16 @@
   },
   {
     "id": 3,
-    "last_name": "awg",
-    "first_name": "awf",
-    "login": "awfawf",
-    "password": "awfawf",
+    "last_name": "ddd",
+    "first_name": "ddd",
+    "login": "ddd",
+    "password": "dddddd",
     "role": 0,
-    "status": "active"
+    "status": "active",
+    "last_login": "",
+    "last_exit": "",
+    "login_count": 0,
+    "logout_count": 0,
+    "work_time": 0
   }
 ]
