@@ -8,10 +8,10 @@
     "role": 1,
     "status": "active",
     "last_login": "2023-10-23 17:08:03",
-    "last_exit": "2023-10-23 17:28:25",
+    "last_exit": "2023-10-23 18:45:45",
     "login_count": 147,
-    "logout_count": 83,
-    "work_time": 0.0
+    "logout_count": 86,
+    "work_time": 4.682777777777778
   },
   {
     "id": 2,
@@ -22,9 +22,9 @@
     "role": 0,
     "status": "active",
     "last_login": "",
-    "last_exit": "",
+    "last_exit": "2023-10-23 18:46:36",
     "login_count": 1,
-    "logout_count": 1,
+    "logout_count": 2,
     "work_time": 0.0
   },
   {

@@ -869,7 +869,7 @@ class ConsoleMenu {
 
             switch (choice) {
                 case 1:
-                    showUserLoginStatistics();
+                    showUserLoginAndLogoutStatistics();
                     break;
                 case 2:
                     showUserWorkDurationStatistics();
@@ -882,14 +882,74 @@ class ConsoleMenu {
         }
     }
 
-    public static void showUserLoginStatistics() {
-        System.out.println("Показать статистику о количестве входов пользователей...");
-        // Реализация показа статистики о количестве входов пользователей
+    public static void showUserLoginAndLogoutStatistics() {
+        System.out.println("Показать статистику о количестве входов/выходов пользователей");
+        JsonArray userData = readJsonData();
+
+        if (userData.size() == 0) {
+            System.out.println("Нет доступных пользователей.");
+        } else {
+            AsciiTable table = new AsciiTable();
+            table.addRule();
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Пароль", "Кол-во входов", "Кол-во выходов");
+            table.addRule();
+
+            for (int i = 0; i < userData.size(); i++) {
+                JsonObject user = userData.get(i).getAsJsonObject();
+                String id = user.get("id").getAsString();
+                String lastName = user.get("last_name").getAsString();
+                String firstName = user.get("first_name").getAsString();
+                String login = user.get("login").getAsString();
+                String password = user.get("password").getAsString();
+                String loginCount = user.has("login_count") ? user.get("login_count").getAsString() : "";
+                String logoutCount = user.has("logout_count") ? user.get("logout_count").getAsString() : "";
+
+                table.addRow(id, lastName, firstName, login, password, loginCount, logoutCount);
+                table.addRule();
+            }
+
+            // Настройка ширины колонок
+            table.getRenderer().setCWC(new CWC_LongestWordMax(50)); // 50 - максимальная ширина столбца
+
+            // Вывод таблицы
+            System.out.println(table.render());
+        }
     }
 
+
     public static void showUserWorkDurationStatistics() {
-        System.out.println("Показать статистику по продолжительности работы пользователей...");
-        // Реализация показа статистики по продолжительности работы пользователей
+        System.out.println("Показать статистику по продолжительности работы пользователей");
+        JsonArray userData = readJsonData();
+
+        if (userData.size() == 0) {
+            System.out.println("Нет доступных пользователей.");
+        } else {
+            AsciiTable table = new AsciiTable();
+            table.addRule();
+            table.addRow("ID", "Фамилия", "Имя", "Логин", "Пароль", "Последний вход", "Последний выход", "Время работы");
+            table.addRule();
+
+            for (int i = 0; i < userData.size(); i++) {
+                JsonObject user = userData.get(i).getAsJsonObject();
+                String id = user.get("id").getAsString();
+                String lastName = user.get("last_name").getAsString();
+                String firstName = user.get("first_name").getAsString();
+                String login = user.get("login").getAsString();
+                String password = user.get("password").getAsString();
+                String lastLogin = user.has("last_login") ? user.get("last_login").getAsString() : "";
+                String lastExit = user.has("last_exit") ? user.get("last_exit").getAsString() : "";
+                String workTime = user.has("work_time") ? user.get("work_time").getAsString() : "";
+
+                table.addRow(id, lastName, firstName, login, password, lastLogin, lastExit, workTime);
+                table.addRule();
+            }
+
+            // Настройка ширины колонок
+            table.getRenderer().setCWC(new CWC_LongestWordMax(50)); // 50 - максимальная ширина столбца
+
+            // Вывод таблицы
+            System.out.println(table.render());
+        }
     }
 
     public static void generateCharts() {
