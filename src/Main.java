@@ -1,17 +1,9 @@
-import java.io.FileReader;
-import java.util.Scanner;
-
-import java.io.*;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
+import com.google.gson.*;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMax;
+
+import java.io.*;
+import java.util.Scanner;
 
 
 class ConsoleMenu {
@@ -479,7 +471,7 @@ class ConsoleMenu {
                 filteredData.add(user);
             } else if (attributeChoice == 2 && role == 0) {
                 filteredData.add(user);
-            } else if (attributeChoice == 3 && "disabled".equalsIgnoreCase(user.get("status").getAsString())) {
+            } else if (attributeChoice == 3 && "inactive".equalsIgnoreCase(user.get("status").getAsString())) {
                 filteredData.add(user);
             } else if (attributeChoice == 4 && "active".equalsIgnoreCase(user.get("status").getAsString())) {
                 filteredData.add(user);
@@ -667,6 +659,7 @@ class ConsoleMenu {
 
                 saveJsonData(data);
                 System.out.println("Статус пользователя с логином '" + loginToChangeStatus + "' изменен на '" + newStatus + "'.");
+                showAllUsers();
             } else {
                 System.out.println("Пользователь с логином '" + loginToChangeStatus + "' не найден.");
             }
